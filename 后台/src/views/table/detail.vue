@@ -6,48 +6,62 @@
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
         <a-form layout="inline" @keyup.enter.native="queryBtn">
-          <a-row :gutter="24" style="display:flex;align-items:center;">
-                  <a-col>报备日期</a-col>
-                  <a-col :md="4" :sm="6">
+          <a-row class="formStyle">
+          <a-row class="leftDiv" style="width: calc(100% - 85px);">
+                  <a-col style="display:flex;align-items:center;padding-right:24px;" :span="5">
+                  <span class="textWidth4" style="white-space: nowrap;">报备日期</span>
                     <!-- 开始时间选择框 -->
-                      <a-date-picker v-model="startValue" placeholder="请选择开始日期" :disabledDate="disabledStartDate" style="width: 100%;" @change="stime" @ok="ok1"/>
+                      <a-date-picker v-model="startValue" placeholder="请选择开始日期" :disabledDate="disabledStartDate" style="width:calc(100% - 47px)!important;min-width:calc(100% - 47px)!important;margin-left:16px;" @change="stime" @ok="ok1"/>
                   </a-col>
-                  <a-col :md="4" :sm="6" style="padding-left: 2px;">
+                  <a-col  style="display:flex;align-items:center;" :span="4">
                     <!-- 结束时间选择框 -->
-                      <a-date-picker v-model="endValue" placeholder="请选择结束日期" :disabledDate="disabledEndDate" style="width: 100%;" @change="etime" @ok="ok2"/>
+                      <a-date-picker v-model="endValue" placeholder="请选择结束日期" :disabledDate="disabledEndDate" style="width:calc(100% - 31px);min-width:calc(100% - 31px)!important;margin-left:8px;" @change="etime" @ok="ok2"/>
+                  </a-col> 
+                   <a-col style="display:flex;align-items:center;" :span="5">
+                  <span class="textWidth4" style="white-space: nowrap;">发布日期</span>
+                      <a-date-picker v-model="publishStartValue" placeholder="请选择开始日期" :disabledDate="disabledStartDate2" 
+                      style="width:calc(100% - 73px)!important;margin-left:16px;" 
+                      @change="stime2" @ok="ok3"/>
                   </a-col>
-                  <a-col>发布形式</a-col>
-                <a-col :md="4" :sm="6">
-                  <a-select style="width:100%!important;" placeholder="请选择发布形式" @change="selectPublishForm" allowClear>
-                      <a-select-option value="">全部</a-select-option>
-                      <a-select-option :value="value" v-for="(value,keys,index) in allPublicType" :key="index">{{value}}</a-select-option>
-                  </a-select>
-                </a-col>
-                  <a-col>品牌</a-col>
-                  <a-col :md="4" :sm="6">
-                   <a-select placeholder="请选择品牌" style="width:100%!important;" @change="selectBrand" allowClear>
-                     <a-select-option value="">全部</a-select-option>
-                     <a-select-option :value="value" v-for="(value,keys,index) in allBrand" :key="index">{{value}}</a-select-option>
-                  </a-select>
+                  <a-col  style="display:flex;align-items:center;" :span="4">
+                      <a-date-picker v-model="publishEndValue" placeholder="请选择结束日期" :disabledDate="disabledEndDate2" 
+                      style="width:calc(100% - 31px)!important;margin-left:8px;" 
+                      @change="etime2" @ok="ok4"/>
                   </a-col>
+                  <a-col style="display:flex;align-items:center;" :span="5">
+                    <span class="textWidth4">发布形式</span>
+                    <a-select style="width:calc(100% - 73px);margin-left:16px;" placeholder="请选择发布形式" @change="selectPublishForm" :showSearch="true" :filter-option="filterOption" allowClear>
+                        <a-select-option value="">全部</a-select-option>
+                        <a-select-option :value="value" v-for="(value,keys,index) in allPublicType" :key="index">{{value}}</a-select-option>
+                    </a-select>
+                  </a-col> 
           </a-row>
-          <a-row :gutter="24" style="margin-top:15px;display:flex;align-items:center;" >
-                <a-col style="margin-right: 11px;width: 69px;text-align:right;">部门</a-col>
-                <a-col :md="4" :sm="6">
-                  <a-select style="width:100%!important;" placeholder="请选择部门" allowClear @change="changeDepartment">
+              <div class="btnCol" style="width:85px;">
+                  <a-button @click="queryBtn" type="primary" class="queryBtn">
+                    <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+                    <span>查询</span>
+                  </a-button>
+                </div>
+          </a-row>
+          <a-row v-if="isSpread" class="leftDiv" style="margin-top:16px;display:flex;align-items:center;width: calc(100% - 85px);" >
+                <a-col style="display:flex;align-items:center;" :span="5">
+                <span style="color:transparent;user-select:none;white-space: nowrap;" class="textWidth2">部门</span>
+                <span class="textWidth2" style="white-space: nowrap;">部门</span>
+                  <a-select style="width:calc(100% - 71px)!important;min-width:calc(100% - 71px)!important;margin-left:16px;" placeholder="请选择部门" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment">
                     <a-select-option value="">全部</a-select-option>
                     <a-select-option :value="items.id" v-for="(items,indexs) in allDepartment" :key="indexs">{{items.dataName}}</a-select-option>
-                  </a-select>
+                  </a-select> 
                 </a-col>
-                 <a-col :md="4" :sm="6" style="padding-left: 2px;">
-                  <a-select style="width:100%!important;" placeholder="请选择子部门" v-model="levelTwoDept" allowClear @change="changeDepartment2">
+                 <a-col style="display:flex;align-items:center;" :span="4">
+                  <a-select style="width:calc(100% - 31px);min-width:calc(100% - 31px)!important;margin-left:8px;" placeholder="请选择子部门" v-model="levelTwoDept" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment2">
                     <a-select-option :value="items.dataName" v-for="(items,indexs) in allDepartment2" :key="indexs">{{items.dataName}}</a-select-option>
                 </a-select>
             </a-col>
-            <a-col>媒体平台</a-col>
-            <a-col :md="4" :sm="6">
+         
+            <a-col style="display:flex;align-items:center;" :span="5">
+            <span class="textWidth4">媒体平台</span>
               <a-select placeholder="请选择媒体平台"
-                style="width: 100%;" allowClear
+                style="width: calc(100% - 73px);margin-left:16px;" :showSearch="true" :filter-option="filterOption" allowClear
                 @change="changeChannel"
               >
                 <a-select-option value="">全部</a-select-option>
@@ -58,39 +72,47 @@
                 >{{value.mediaPlatformName}}</a-select-option>
               </a-select>
              </a-col>
-            <a-col :style="{visibility:showInput?'visible':'hidden'}" :md="4" :sm="6">
-              <a-input style="width: 100%;" v-model="queryParam.otherChannelPlatform" allowClear/>
-            </a-col>
-             <!-- <a-col style="position: absolute;right: 0;">
-              <a-button type="primary" icon="search" @click="queryBtn">查询</a-button>
-            </a-col> -->
-            <a-col class="col" style="position:absolute;right:0;">
-						   <a-button @click="queryBtn" type="primary" class="queryBtn">
-							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
-							查询</a-button>
-					  </a-col>
+              <a-col style="display:flex;align-items:center;position:relative;" :span="4" v-if="showInput">
+                <a-input placeholder="请输入搜索文字" :style="{'width': 'calc(100% - 23px)','padding-left':'8px'}" v-model="queryParam.otherChannelPlatform" allowClear/>
+             </a-col>
+          
+            <a-col style="display:flex;align-items:center;" :span="5"> 
+            <span class="textWidth4" style="text-align:right;">品牌</span>
+                <a-select placeholder="请选择品牌" style="width:calc(100% - 73px);margin-left:16px;" @change="selectBrand" :showSearch="true" :filter-option="filterOption" allowClear>
+                  <a-select-option value="">全部</a-select-option>
+                  <a-select-option :value="value" v-for="(value,keys,index) in allBrand" :key="index">{{value}}</a-select-option>
+              </a-select>
+              </a-col> 
           </a-row>
+           <!-- 展开/收起按钮 -->
+          <div class="outerText" :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
+            <span @click="isSpread = !isSpread" style="cursor: pointer;">
+              <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+              <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
+            </span>
+          </div>
         </a-form>
       </div>
     </a-card>
     <!-- 报备列表 -->
-    <a-card :bordered="false" :hoverable="true" title="报备列表" :bodyStyle="{'padding-top':'0'}" :headStyle="headStyle">
+    <a-card :bordered="false" :hoverable="true" title="报备列表" :bodyStyle="bodyStyle" :headStyle="headStyle">
           <a-button
             slot="extra"
             v-if="authButton.hasOwnProperty('exportBtn')&&authButton.exportBtn"
             type="primary"
             icon="download"
+            style="padding:0 16px;position:absolute;right:32px;"
             @click="handleExportXls('报备统计明细表')"
           >导出</a-button>
       <a-row>
         <a-col :md="24">
           <a-table
-            style="height:500px;"
+            style="height:500px;margin:0;"
             ref="table"
             size="small"
-            :bordered="false"
+            :bordered="bordered"
             rowKey="id"
-            :scroll="{x:1300,y:500,scrollToFirstRowOnChange:true}"
+            :scroll="{scrollToFirstRowOnChange:true}"
             :columns="columns"
             :dataSource="dataSource"
             :pagination="ipagination"
@@ -110,7 +132,7 @@
               </a-popover>
             </span>
             <span slot="action" slot-scope="text, record">
-              <a v-if="authButton.hasOwnProperty('reviewBtn')&&authButton.reviewBtn" @click="review(record)" style="color:#3264D5;margin-right:14px;">详情</a>
+              <a v-if="authButton.hasOwnProperty('reviewBtn')&&authButton.reviewBtn" @click="review(record)" style="color:#3264D5;margin-right:12px;">详情</a>
               <!-- <a-divider v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" type="vertical" /> -->
               <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" @click="edit(record)" style="color:#3264D5">编辑</a>
             </span>
@@ -130,8 +152,8 @@
             <a-col :span="4" class="col-3">媒体平台：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder
                 v-model="reviewData.channelPlatform"
               ></a-input>
@@ -140,8 +162,8 @@
             <a-col :span="4" class="col-3" v-if="showChannelName">账号名称：</a-col>
             <a-col :span="5" v-if="showChannelName">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder
                 v-model="reviewData.channelName"
               ></a-input>
@@ -151,20 +173,20 @@
               <!-- 其他平台 -->
               <a-col :span="4" class="col-3">平台名称：</a-col>
               <a-col :span="5">
-                <a-input :disabled="true" style="width:100%!important;color:#55565D;" placeholder="" v-model="otherPlateformName"></a-input>
+                <a-input :readOnly="true" class="inputBg" placeholder="" v-model="otherPlateformName"></a-input>
               </a-col>
               <!-- 其他渠道名称： -->
               <a-col :span="4" class="col-3">账号名称：</a-col>
               <a-col :span="5">
-                <a-input :disabled="true" style="width:100%!important;color:#55565D;" placeholder="" v-model="otherChilnelName"></a-input>
+                <a-input :readOnly="true" class="inputBg" placeholder="" v-model="otherChilnelName"></a-input>
               </a-col>
             </a-row>
           <a-row class="row">
             <a-col :span="4" class="col-3">发布时间：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder="发布时间"
                 v-model="reviewData.publishDate"
               ></a-input>
@@ -172,8 +194,8 @@
             <a-col :span="4" class="col-3">品牌：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder="品牌"
                 v-model="reviewData.brand"
               ></a-input>
@@ -183,8 +205,8 @@
             <a-col :span="4" class="col-3">发布形式：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder="发布形式"
                 v-model="reviewData.publishForm"
               ></a-input>
@@ -192,8 +214,8 @@
             <a-col :span="4" class="col-3">姓名：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder="姓名"
                 v-model="reviewData.responsible"
               ></a-input>
@@ -203,11 +225,11 @@
               <!-- 一级部门 -->
               <a-col :span="4" class="col-3">部门：</a-col>
               <a-col :span="5">
-                 <a-input :disabled="true" style="width:100%!important;color:#55565D;" placeholder="" v-model="selectDept"></a-input>
+                 <a-input :readOnly="true" class="inputBg" placeholder="" v-model="selectDept"></a-input>
               </a-col>
               <!-- 二级部门 -->
               <a-col :span="5" style="margin-left:8px;">
-                 <a-input :disabled="true" style="width:100%!important;color:#55565D;" placeholder="" v-model="selectDept2"></a-input>
+                 <a-input :readOnly="true" class="inputBg" placeholder="" v-model="selectDept2"></a-input>
               </a-col>
             </a-row>
           <!-- 其他 -->
@@ -215,16 +237,16 @@
             <a-col :span="4" class="col-3">是否涉及版权：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 v-model="lookBq"
               ></a-input>
             </a-col>
             <a-col :span="4" class="col-3">是否kol：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 v-model="lookQol"
               ></a-input>
             </a-col>
@@ -233,8 +255,8 @@
             <a-col :span="4" class="col-3">报备时间：</a-col>
             <a-col :span="5">
               <a-input
-                :disabled="true"
-                style="width:100%!important;color:#55565D;"
+                :readOnly="true"
+                class="inputBg"
                 placeholder="报备时间"
                 v-model="reviewData.reportDate"
               ></a-input>
@@ -248,10 +270,12 @@
             <a-col :span="4" class="col-3">标题：</a-col>
             <a-col :span="15">
               <a-input
-                :disabled="true"
-                style="width:97%!important;color:#55565D;"
+                :readOnly="true"
+                type="textarea"
+                style="width:97%!important;color:#55565D;background:#F5F5F5;"
                 placeholder="内容标题"
-                v-model="reviewData.titles"
+                v-model="reviewData.completeTitle"
+                :autosize="autoSize2"
               ></a-input>
               <!--<span class="red">*</span>-->
             </a-col>
@@ -261,8 +285,8 @@
             <a-col :span="4" class="col-3">文字内容：</a-col>
             <a-col :span="15">
               <a-input
-                :disabled="true"
-                style="width:97%!important;color:#55565D;"
+                :readOnly="true"
+                style="width:97%!important;color:#55565D;background:#F5F5F5;"
                 type="textarea"
                 placeholder="文本内容"
                 v-model="reviewData.contentProfile"
@@ -275,7 +299,8 @@
               <a-row>
                 <!-- 上传图片： -->
                 <a-col :span="4" class="col-3">上传图片：</a-col>
-                <a-col :span="16" style="display: flex;flex-wrap: wrap;">
+                <a-col :span="16">
+                  <div v-if="reviewData.imagePath.length>0" style="display: flex;flex-wrap: wrap;">
                   <span
                     v-for="(item,index) in reviewData.imagePath"
                     :key="index"
@@ -293,6 +318,8 @@
                       />
                     </a>
                   </span>
+                  </div>
+                  <span v-else style="color:#55565D;font-size:14px;">无</span>
                   <!--<img style="width: 100px;height: 100px;margin: 10px 10px 0 0" v-for="(item,index) in imageSrc" :key="index" :src="item"  alt="">-->
                 </a-col>
               </a-row>
@@ -303,7 +330,8 @@
               <a-row>
                 <!-- 上传视频： -->
                 <a-col :span="4" class="col-3">上传视频：</a-col>
-                <a-col :span="16" style="display: flex;flex-wrap: wrap;">
+                <a-col :span="16">
+                  <div v-if="reviewData.mediaPath.length>0" style="display: flex;flex-wrap: wrap;">
                   <span
                     v-for="(item,index) in reviewData.mediaPath"
                     :key="index"
@@ -320,6 +348,8 @@
                       :style="{ fontSize: '18px'}"
                     />
                   </span>
+                  </div>
+                  <span v-else style="color:#55565D;font-size:14px;">无</span>
                   <!--<video style="width: 100px;height: 100px;margin: 10px 10px 0 0" v-for="(item,index) in videoSrc" :src="item" :key="index" controls = "true"></video>-->
                 </a-col>
               </a-row>
@@ -330,8 +360,8 @@
             <a-col :span="4" class="col-3">原文链接：</a-col>
             <a-col :span="15">
               <a-input
-                :disabled="true"
-                style="width:97%!important;color:#55565D;"
+                :readOnly="true"
+                style="width:97%!important;color:#55565D;background:#F5F5F5;"
                 placeholder="原文链接"
                 v-model="reviewData.sourceUrl"
               ></a-input>
@@ -354,7 +384,7 @@
        <img :src="preImgUrl" alt="" style="width:100%">
     </a-modal>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 <script>
@@ -379,6 +409,11 @@ export default {
   components: { ReportEditModal,tooltip },
   data() {
     return {
+      publishStartValue:null,
+      publishEndValue:null,
+      isSpread:false,
+      bordered:false,
+      bodyStyle:{'padding-top':'0'},
       message:'操作成功',
       type:'info',
       headStyle:{
@@ -402,7 +437,9 @@ export default {
       lookBq:false,
       lookQol:false,
       st: '',
+      st2: '',
       et: '',
+      et2: '',
       dp:'',
       startValue: null,
       endValue: null,
@@ -414,6 +451,7 @@ export default {
       departmentName:'',
       visible: false,
       autoSize: { minRows: 3 }, // 内容文本输入框的最小行数
+      autoSize2: { minRows: 1 }, // 标题框的最小行数
       //查看的数据
       reviewData: {},
       //编辑的数据
@@ -442,6 +480,8 @@ export default {
         otherChannelPlatform: '', //  其他媒体，微信朋友圈
         publishForm: '', //
         brand: '', //
+        publishStartValue: '', // 发布开始时间
+        publishEndValue: '', // 发布结束时间
       },
       channelPlatform:'',
       publishForm:'',
@@ -459,11 +499,11 @@ export default {
 //           )
 //           }
 //         },
-        {
-          title: '发布日期',
+         {
+          title: '报备日期',
           align: 'center',
           width:100,
-          dataIndex: 'publishDate',
+          dataIndex: 'reportDate',
           className:'table_title'
         },
         {
@@ -476,35 +516,35 @@ export default {
         {
           title: '责任人',
           align: 'center',
-          width:100,
+          width:70,
           dataIndex: 'responsible',
           className:'table_title'
         },
         {
-          title: '平台',
+          title: '媒体平台',
           align: 'center',
-          width:120,
+          width:100,
           dataIndex: 'channelPlatform',
           className:'table_title'
         },
         {
           title: '账号',
           align: 'center',
-          width:140,
+          width:110,
           dataIndex: 'channelName',
           className:'table_title'
         },
         {
           title: '品牌',
           align: 'center',
-          width:100,
+          width:80,
           dataIndex: 'brand',
           className:'table_title'
         },
         {
           title: '发布形式',
           align: 'center',
-          width:100,
+          width:90,
           dataIndex: 'publishForm',
           className:'table_title'
         },
@@ -519,22 +559,22 @@ export default {
           title: 'kol',
           dataIndex: 'isQol',
           align: 'center',
-          width: 50,
+          width: 30,
           className:'table_title'
         },
         {
           title: '标题',
           align: 'center',
           dataIndex: 'completeTitle',
-          minWidth:100,
+          width:120,
           scopedSlots: { customRender: 'completeTitle' },
           className:'table_title'
         },
         {
-          title: '报备日期',
+          title: '发布日期',
           align: 'center',
           width:100,
-          dataIndex: 'reportDate',
+          dataIndex: 'publishDate',
           className:'table_title'
         },
         {
@@ -571,10 +611,10 @@ export default {
     if(auth.hasOwnProperty(this.$route.name)){
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    // setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },300)
   },
   methods: {
         // 鼠标移入图片触发
@@ -632,6 +672,7 @@ export default {
          this.channelPlatform=''
          this.showInput = false
          this.queryParam.chanelId = ''
+         this.queryParam.channelPlatform=''
          this.queryParam.otherChannelPlatform = ''
        }else{
          this.showInput = false
@@ -708,6 +749,22 @@ export default {
         time.getSeconds()
       this.queryParam.beginDate = startTime
     },
+    ok3(e) {
+      var time3 = new Date(new Date(e._d).getTime())
+      var startTime3 =
+        time3.getFullYear() +
+        '-' +
+        Number(time3.getMonth() + 1) +
+        '-' +
+        time3.getDate() +
+        ' ' +
+        time3.getHours() +
+        ':' +
+        time3.getMinutes() +
+        ':' +
+        time3.getSeconds()
+      this.queryParam.publishStartValue = startTime3
+    },
     //  点击 结束时间框 的确定按钮时触发
     ok2(e) {
       var time = new Date(new Date(e._d).getTime())
@@ -725,6 +782,22 @@ export default {
         time.getSeconds()
       this.queryParam.endDate = endTime
     },
+    ok4(e) {
+      var time4 = new Date(new Date(e._d).getTime())
+      var endTime4 =
+        time4.getFullYear() +
+        '-' +
+        Number(time4.getMonth() + 1) +
+        '-' +
+        time4.getDate() +
+        ' ' +
+        time4.getHours() +
+        ':' +
+        time4.getMinutes() +
+        ':' +
+        time4.getSeconds()
+      this.queryParam.publishEndValue = endTime4
+    },
     disabledStartDate(startValue) {
       const endValue = this.endValue
       if (!startValue || !endValue) {
@@ -732,8 +805,22 @@ export default {
       }
       return startValue.valueOf() > endValue.valueOf()
     },
+    disabledStartDate2(startValue) {
+      const endValue = this.publishEndValue
+      if (!startValue || !endValue) {
+        return false
+      }
+      return startValue.valueOf() > endValue.valueOf()
+    },
     disabledEndDate(endValue) {
       const startValue = this.startValue
+      if (!endValue || !startValue) {
+        return false
+      }
+      return startValue.valueOf() >= endValue.valueOf()
+    },
+    disabledEndDate2(endValue) {
+      const startValue = this.publishStartValue
       if (!endValue || !startValue) {
         return false
       }
@@ -756,6 +843,15 @@ export default {
         this.st = e2
       }
     },
+    stime2(e1, e2) {
+      if (!e2) {
+        this.queryParam.publishStartValue = ''
+        this.st2 = ''
+      } else {
+        this.queryParam.publishStartValue = e2
+        this.st2 = e2
+      }
+    },
     etime(e1, e2) {
       if (!e2) {
         this.queryParam.endDate = ''
@@ -763,6 +859,15 @@ export default {
       } else {
         this.queryParam.endDate = e2
         this.et = e2
+      }
+    },
+    etime2(e1, e2) {
+      if (!e2) {
+        this.queryParam.publishEndValue = ''
+        this.et2 = ''
+      } else {
+        this.queryParam.publishEndValue = e2
+        this.et2 = e2
       }
     },
         // 获取所有部门
@@ -833,12 +938,15 @@ export default {
       // this.queryParam.publishForm = this.publishForm  // 发布形式
 
       // this.queryParam.brand = this.brand ? this.brand : '' // 品牌
+      // this.queryParam.publishEndValue = this.queryParam.publishEndValue + " 00:00:00" // 发布日期开始时间
+      // this.queryParam.publishStartValue = this.queryParam.publishStartValue + " 00:00:00" // 发布日期结束时间
       this.queryParam.beginDate = this.queryParam.beginDate ? this.queryParam.beginDate : '' // 报备日期开始时间
       this.queryParam.endDate = this.queryParam.endDate ? this.queryParam.endDate : '' // 报备日期结束时间
       if(this.queryParam.channelPlatform === '微信朋友圈' || this.queryParam.channelPlatform ==='其他媒体平台'){
         this.queryParam.channelPlatform = ''
       }
       console.log('wwww',this.queryParam)
+      // return;
       // this.loadData();
       this.searchQuery();
       // return
@@ -986,5 +1094,9 @@ export default {
   border: 1px dashed #DFE0EB;
   position: relative;
 }
-
+.inputBg{
+ width:100%!important;
+ color:#55565D;
+ background:#F5F5F5;
+}
 </style>

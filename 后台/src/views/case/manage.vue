@@ -1,17 +1,17 @@
 <template>
 	<div class="navBox">
 		<div class="navSearch">
-			 <a-card title="" :bordered="false" style="width: 100%;">
-			   <a-row :gutter="24" style="display:flex;align-items:center;">
+			 <a-card title="" :bordered="false" style="width: 100%;"  :bodyStyle="{'display':'flex','justify-content':'space-between'}">
+			   <a-row class="leftDiv">
 			       <!-- 审核状态 -->
-			       <a-col>案例名称</a-col>
-			       <a-col :md="4" :sm="6">
-			         <a-input defaultValue style="width:100%" @keydown="enter" v-model="domeName" placeholder="请输入案例名称"></a-input>
+			       <a-col style="display:flex;align-items:center;" :span="8">
+			       <span class="textWidth4">案例名称</span>
+			         <a-input defaultValue style="width:calc(100% - 97px);margin-left:16px;" allowClear  v-model="domeName" placeholder="请输入案例名称"></a-input>
 			       </a-col>
-			       <!-- 发布渠道 -->
-			       <a-col>案例类型</a-col>
-			        <a-col :md="4" :sm="6">
-			        <a-select  style="width:100%"  @change="changeOne"  allowClear  placeholder="请选择案例类型" >
+			       <!-- 账号 -->
+			        <a-col style="display:flex;align-items:center;" :span="8">
+			        <span class="textWidth4">案例类型</span>
+			        <a-select  style="width:calc(100% - 97px);margin-left:16px;"  @change="changeOne"  allowClear  placeholder="请选择案例类型" :showSearch="true" :filter-option="filterOption">
 			          <a-select-option value >
 			          	全部
 			           </a-select-option>
@@ -19,21 +19,21 @@
 			        </a-select>
 			       </a-col>
 			       <!-- 发布平台 -->
-			       <a-col>下载部门</a-col>
-			       <a-col :md="4" :sm="6">
-			         <a-select style="width:100%"  @change="changeTwo"  allowClear  placeholder="请选择下载部门">
+			       <a-col style="display:flex;align-items:center;" :span="8">
+			       <span class="textWidth4">下载部门</span>
+			         <a-select style="width:calc(100% - 97px);margin-left:16px;"  @change="changeTwo"  allowClear  placeholder="请选择下载部门" :showSearch="true" :filter-option="filterOption">
 			         <a-select-option value>
 			           全部
 			         </a-select-option>
 			         <a-select-option :value="item.id" v-for="(item,index) in branchS" :key="index">{{item.departmentName}}</a-select-option>
 			       </a-select>
 			       </a-col>
-				    <a-col class="col" style="position:absolute;right:0;">
+			   </a-row>
+				    <div class="btnCol" style="width:170px;">
 						   <a-button @click="onSearch" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					</a-col>
-			   </a-row>
+					</div>
 			   <!-- <a-row style="position: absolute;bottom:16px;right: 23px;">
 			        <a-button
 			         type="primary"
@@ -195,9 +195,16 @@
 		  // }
 		  this.getAll()
 		  console.log()
+		  document.onkeydown = this.keydown;
 	  },
 	  methods:{
-		 
+		 keydown(e){//全局搜索
+		 	   var currKey=0,e=e||event; 
+		 	   currKey=e.keyCode||e.which||e.charCode;//支持IE、FF 
+		 	   if (currKey == 13){
+		 		  this.onSearch();
+		 		  }
+		 },
 		  changeTwo(val){
 			  this.branch=val;
 		  },
@@ -211,7 +218,7 @@
 			  	size:1000
 			  }
 			  console.log("getALL执行了")
-			  getdepartment(params).then(res=>{
+			  getdepartment(params).then(res=>{//下载部门
 			  	if(res.code===200){
 			  		this.branchS = res.data.list
 
@@ -226,7 +233,7 @@
 					},3000)
 			  	}
 			  })
-			  departmentAll({'dataType':"brand"}).then(res=>{
+			  departmentAll({'dataType':"brand"}).then(res=>{//品牌
 				  if(res.code===200){
 					  this.trademarkS = res.data
 					  console.log(this.trademarkS)
@@ -240,7 +247,7 @@
 					  },3000)
 				  }
 			  })
-			  departmentAll({'dataType':"caseType"}).then(res=>{
+			  departmentAll({'dataType':"caseType"}).then(res=>{//案例类型
 				  if(res.code===200){
 					  this.domeTypeS = res.data
 					  console.log(this.domeTypeS)
@@ -257,12 +264,7 @@
 			  })
 
 		  },
-		  enter(e){//按键查询
-			  if(e.keyCode == 13){
-				this.onSearch();
-			  }
-		  },
-		  onSearch(){
+		  onSearch(){//搜索
 			 this.queryParam.classicsCaseName = this.domeName; //
 			 this.queryParam.departmentId = this.branch; //
 			 this.queryParam.classicsCaseType = this.domeType; //
@@ -271,6 +273,9 @@
 			 this.searchQuery();
 		  },
 
+	  },
+	  beforeDestroy(){
+	  	  document.onkeydown=null;
 	  }
 	  }
 </script>
@@ -287,12 +292,7 @@
 			width: 552px;
 			height: 36px;
 		}
-	}
-	.contS{
-
-	}
-
-
+	} 
 	.ant-btn-primary{
 		background: #3264D5 !important;
 	}

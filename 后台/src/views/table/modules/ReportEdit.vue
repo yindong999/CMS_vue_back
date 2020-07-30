@@ -5,11 +5,11 @@
      <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="editSave" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="editSave" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="closeEdit" class="abolishBtn">取消</a-button>
-				</a-config-provider>  
+				</a-config-provider>
 				</div>
 			</template>
       <div v-show="spinning" style="width:100%;height:100%;position:fixed;background:#fff;opacity:0.6;left:0;top:0;z-index:99;">
@@ -23,14 +23,14 @@
                 <a-col :span="24" class="bb_title">基本信息</a-col>
             </a-row>
             <a-row class="row">
-              <!-- 发布渠道： -->
+              <!-- 账号： -->
               <a-col :span="4" class="col-3"><span class="red">*</span>媒体平台：</a-col>
-              <a-col :span="5"> 
+              <a-col :span="5">
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" :value="publicChannel"></a-input>
               </a-col>
               <!-- 发布账号： -->
               <a-col :span="4" v-if="showChannelName" class="col-3"><span class="red">*</span>账号名称：</a-col>
-              <a-col :span="5" v-if="showChannelName"> 
+              <a-col :span="5" v-if="showChannelName">
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" :value="publicAccount"></a-input>
               </a-col>
             </a-row>
@@ -53,15 +53,15 @@
               </a-col>
                <a-col :span="4" class="col-3"><span class="red">*</span>品牌：</a-col>
               <a-col :span="5">
-                <a-select  style="width:100%!important;" v-model="brand">
+                <a-select  style="width:100%!important;" v-model="brand" :showSearch="true" :filter-option="filterOption" allowClear>
                   <a-select-option :value="value" v-for="(value,keys,index) in allBrand" :key="index">{{value}}</a-select-option>
                 </a-select>
               </a-col>
-            </a-row> 
+            </a-row>
             <a-row class="row">
               <a-col :span="4" class="col-3"><span class="red">*</span>发布形式：</a-col>
               <a-col :span="5">
-                <a-select  style="width:100%!important;" v-model="contentType">
+                <a-select  style="width:100%!important;" v-model="contentType" :showSearch="true" :filter-option="filterOption" allowClear>
                   <a-select-option :value="value" v-for="(value,keys,index) in allPublicType" :key="index">{{value}}</a-select-option>
                 </a-select>
               </a-col>
@@ -75,13 +75,13 @@
               <!-- 一级部门 -->
               <a-col :span="4" class="col-3"><span class="red">*</span>部门：</a-col>
               <a-col :span="5">
-                <a-select style="width:100%!important;" v-model="selectDept" @change="changeDepartment">
+                <a-select style="width:100%!important;" v-model="selectDept" @change="changeDepartment" :showSearch="true" :filter-option="filterOption" allowClear>
                   <a-select-option :value="items.id" v-for="(items,indexs) in allDepartment" :key="indexs">{{items.dataName}}</a-select-option>
                 </a-select>
               </a-col>
               <!-- 二级部门 -->
               <a-col :span="5" style="margin-left:8px;">
-                <a-select style="width:100%!important;" v-model="selectDept2" @change="changeDepartment2">
+                <a-select style="width:100%!important;" v-model="selectDept2" @change="changeDepartment2" :showSearch="true" :filter-option="filterOption" allowClear>
                   <a-select-option :value="items.dataName" v-for="(items,indexs) in allDepartment2" :key="indexs">{{items.dataName}}</a-select-option>
                 </a-select>
               </a-col>
@@ -89,14 +89,14 @@
             <a-row class="row">
               <a-col :span="4" class="col-3"><span class="red">*</span>是否涉及版权：</a-col>
               <a-col :span="5">
-                   <a-select v-model="hasCopyRight" style="width:100%!important;">
+                   <a-select v-model="hasCopyRight" style="width:100%!important;" :showSearch="true" :filter-option="filterOption" allowClear>
                     <a-select-option value="0">是</a-select-option>
                     <a-select-option value="1">否</a-select-option>
                   </a-select>
               </a-col>
               <a-col :span="4" class="col-3">是否kol：</a-col>
               <a-col :span="5">
-                  <a-select v-model="isQol" style="width:100%!important;" defaultValue="1" >
+                  <a-select v-model="isQol" style="width:100%!important;" defaultValue="1" :showSearch="true" :filter-option="filterOption" allowClear>
                   <a-select-option value="0">是</a-select-option>
                   <a-select-option value="1">否</a-select-option>
                   </a-select>
@@ -216,7 +216,7 @@
     <!-- </a-spin> -->
   </a-modal>
     <!-- 图片预览弹窗 -->
-  <a-modal 
+  <a-modal
       width="800px"
       title="图片预览"
       :keyboard="true"
@@ -225,9 +225,9 @@
       :zIndex="1200"
     >
        <img :src="preImgUrl" alt="" style="width:100%">
-    </a-modal> 
+    </a-modal>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
     </div>
 </template>
 
@@ -278,7 +278,7 @@
         templateId:'',
         //不可编辑的渠道id
         channelId:'',
-        publicChannel: null, //发布渠道的value值
+        publicChannel: null, //账号的value值
         publicAccount: null, //发布账号的value值
         msg: '', // 上传视频后 或者保存成功后的消息提示
         content: '', // 文本内容
@@ -306,7 +306,9 @@
         publishTimeStr:null,//字符串发布时间
         brand:'',//品牌
         contentType:'',//图文类型
-        allDepartment2:[]
+        allDepartment2:[],
+        //操作按钮禁用
+        btnDisabled:false
       }
     },
     props:['allDepartment','allBrand','allPublicType'],
@@ -390,7 +392,7 @@
           }
         })
       },
-      // 点击发布渠道下拉选触发
+      // 点击账号下拉选触发
       changeChannel(e) {
         this.mediaPlate.forEach(res=>{
           if(res.mediaPlatformCode === e){
@@ -710,12 +712,13 @@
         this.$refs.tooltip.visible = true
         this.$refs.tooltip.alertVisible = true
         setTimeout(()=>{
-          this.$refs.tooltip.cancel() 
+          this.$refs.tooltip.cancel()
         },3000)
       },
       //编辑保存
       editSave(){
         if(this.validateData()&&!this.showTitle&&!this.showCreator){
+          this.btnDisabled = true
           var oneDep = ''
         this.allDepartment.forEach(item=>{
           if(item.id===this.selectDept){
@@ -753,6 +756,7 @@
         }
         console.log(param)
         saveContentReport(param).then(res=>{
+          this.btnDisabled = false
           console.log(res)
           if(res.code===200){
             // this.$message.success('操作成功')
@@ -770,6 +774,12 @@
           this.close();
         })
         }
+      },
+      //下拉框数据过滤
+      filterOption(input, option) {
+        return (
+          option.componentOptions.children[0].text.indexOf(input) >= 0
+        );
       },
     }
   }
@@ -819,5 +829,5 @@
   margin: 0 14px 8px 0px;
   border: 1px dashed #DFE0EB;
   position: relative;
-} 
+}
 </style>

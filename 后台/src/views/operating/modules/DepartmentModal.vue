@@ -11,7 +11,7 @@
      <template slot="footer">
         <div :style="{ textAlign: 'center',padding:'14px 16px'  }">
           <a-config-provider :auto-insert-space-in-button="false">
-            <a-button type="primary"  @click="handleOk" class="affirmBtn">确认</a-button>
+            <a-button type="primary"  @click="handleOk" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
           </a-config-provider>
           <a-config-provider :auto-insert-space-in-button="false">
             <a-button @click="handleCancel" class="abolishBtn">取消</a-button>
@@ -33,7 +33,7 @@
           :wrapperCol="wrapperCol" style="margin-bottom:16px;"
           label="部门类型">
           <!-- {hidden:roleDisabled?' #f5f5f5':'#fff'}" -->
-          <a-select :style="{display:roleDisabled?'none':''}" :showSearch="true" placeholder="请选择部门类型" v-decorator="[ 'departmentType', validatorRules.departmentType]">
+          <a-select :style="{display:roleDisabled?'none':''}" :showSearch="true" :filter-option="filterOption" allowClear placeholder="请选择部门类型" v-decorator="[ 'departmentType', validatorRules.departmentType]">
             <a-select-option v-for="(item,key) in departmentTypeData" :value="item.value" :key="key" >{{item.label}}</a-select-option>
           </a-select>
           <a-input :style="{display:!roleDisabled?'none':'',color:'#55565D'}" :disabled="true" :value="model.departmentType==='0'?'海尔':'供应商'"/>
@@ -54,7 +54,7 @@
         </a-form-item>
       </a-form>
     </a-spin>
-     <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </a-modal>
 </template>
 
@@ -64,7 +64,7 @@
   import tooltip from "@/components/tooltip/tooltip.vue"
   export default {
     name: "DepartmentModal",
-    components:{ tooltip },  
+    components:{ tooltip },
     data () {
       return {
         message:'操作成功',
@@ -108,6 +108,8 @@
               {validator: this.validatePhone}
             ]},
         },
+        //操作按钮禁用
+        btnDisabled:false
       }
     },
     created () {
@@ -143,6 +145,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+            this.btnDisabled = true
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values);
             let obj;
@@ -171,6 +174,7 @@
               }
             }).finally(() => {
               that.confirmLoading = false;
+              this.btnDisabled = false
               that.close();
             })
           }
@@ -180,7 +184,7 @@
         this.$refs.tooltip.visible = true
         this.$refs.tooltip.alertVisible = true
         setTimeout(()=>{
-          this.$refs.tooltip.cancel() 
+          this.$refs.tooltip.cancel()
         },3000)
       },
       handleCancel () {
@@ -219,6 +223,12 @@
             callback("请输入正确格式的手机号码!");
           }
         }
+      },
+      //下拉框数据过滤
+      filterOption(input, option) {
+        return (
+          option.componentOptions.children[0].text.indexOf(input) >= 0
+        );
       },
     }
   }

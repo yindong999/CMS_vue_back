@@ -3,7 +3,7 @@ import App from './App.vue'
 import Storage from 'vue-ls'
 import router from './router'
 import store from './store/'
-
+import '@/js/ejl.js'
 import { VueAxios } from "@/utils/request"
 
 import Antd from 'ant-design-vue'
@@ -43,7 +43,7 @@ import {
 import config from '@/defaultSettings'
 
 import hasPermission from '@/utils/hasPermission'
-import vueBus from '@/utils/vueBus';
+import vueBus from '@/utils/vueBus'; 
 import JeecgComponents from '@/components/jeecg/index'
 
 Vue.config.productionTip = false
@@ -61,7 +61,7 @@ Vue.use(JeecgComponents);
 Vue.p
 
 import { message,notification } from 'ant-design-vue'
-Vue.prototype.$message = message;
+Vue.prototype.$message = message; 
 Vue.prototype.$notification = notification;
 message.config({
   top: `30%`,

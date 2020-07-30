@@ -2,6 +2,16 @@
   <div class="user-wrapper" :class="theme">
     <!-- 通知按钮 -->
     <!-- <header-notice class="action"/> -->
+    <!--友情链接-->
+    <a-popover placement="bottom">
+      <template slot="content">
+        <p style="cursor: pointer;margin-bottom: 0!important;" @click="toLink">海尔集团数字媒体平台</p>
+      </template>
+      <span style="margin-right:32px ">
+        <img src="@/assets/link.png" alt=""  style="width: 24px;height: 24px;">
+        <span style="margin-left:5px;color: #fff;position: relative;top:1px;">资源链接</span>
+      </span>
+    </a-popover>
     <router-link
       v-if="isHaveNotice"
       tag="span"
@@ -9,14 +19,14 @@
        style="line-height:none;display:flex!important;align-items:center;"
       :to="{ name: 'messageList-Index' }"
     >
-      <!-- <a-badge :count="counts" style="top:8px;position: relative;"> 
+      <!-- <a-badge :count="counts" style="top:8px;position: relative;">
         <img src="@/assets/message.png" style="width:20px;height:19px;cursor: pointer!important;" alt="">
         <a href="#" class="head-example"></a>
       </a-badge>  -->
         <div style="position:relative;line-height:20px!important;">
         <img src="@/assets/message.png" style="width:20px;height:19px;cursor: pointer!important;" alt="">
         <div :class="['default',large?'largeSize':'defaultSize']" v-show="counts!==0">
-          <span  :style="{transform:'scale('+ (counts<10?1:counts<99?0.8:0.7)+')'}">{{!(counts>99)?counts:'99+'}}</span>
+          <span  :style="{transform:'scale('+ (counts<10?1:counts<99?0.9:0.8)+')',position:'relative','font-size':'12px'}">{{!(counts>99)?counts:'99+'}}</span>
         </div>
       </div>
     </router-link>
@@ -38,7 +48,7 @@
             <a-icon type="user" />
             <span>个人中心</span>
           </router-link>
-        </a-menu-item> 
+        </a-menu-item>
       </a-menu> -->
     </a-dropdown>
     <!-- 退出按钮 -->
@@ -180,6 +190,10 @@ export default {
     systemSetting(){
       this.$refs.settingDrawer.showDrawer()
     },
+    //跳转链接
+    toLink(){
+      window.open('https://news.haier.net')
+    }
     /*update_end author:zhaoxin date:20191129 for: 做头部菜单栏导航*/
   }
 }

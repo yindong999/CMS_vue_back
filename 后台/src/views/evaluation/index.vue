@@ -1,29 +1,26 @@
 <template>
 	<div>
 	<!-- 顶部查询条件模块 -->
-
 		<div style="background:#ECECEC; margin-bottom:12px" :bodyStyle="{'padding-top':'16px','padding-bottom':'17px'}">
-			<a-card title="" :bordered="false" style="width: 100%;">
-				<a-row :gutter="24" style="display:flex;align-items:center;">
+			<a-card title="" :bordered="false" style="width: 100%;" :bodyStyle="{'display':'flex','justify-content':'space-between'}">
+				<a-row class="leftDiv">
 				<!-- 审核状态 -->
-					<a-col>内容标题</a-col>
-						<a-col :md="4" :sm="6">
-						<a-input defaultValue v-model="ContTile" @keydown="enter"  placeholder="请输入内容标题" style="width:100%;"/>
+					<a-col style="display:flex;align-items:center;" :span="8">
+						<span class="textWidth4">内容标题</span>
+						<a-input style="width:calc(100% - 97px);margin-left: 16px;" defaultValue allowClear v-model="ContTile"   placeholder="请输入内容标题"/>
 					</a-col>
 				<!-- 媒体平台 -->
-
-					<a-col>发布人部门</a-col>
-					<a-col :md="4" :sm="6">
-						<a-select style="width:100%" @change="mediaChange" placeholder="请选择发布人部门" >
+					<a-col style="display:flex;align-items:center;" :span="8">
+						<span class="textWidth4">发布部门</span>
+						<a-select style="width:calc(100% - 97px);margin-left: 16px;" @change="mediaChange" placeholder="请选择发布人部门" :showSearch="true" :filter-option="filterOption" allowClear >
 							<a-select-option value>全部</a-select-option>
 							<a-select-option  v-for="(item,index) in media"  :key="index" >{{item.departmentName||'空'}}</a-select-option>
 						</a-select>
 					</a-col>
-				<!-- 发布渠道 -->
-
-					<a-col>发布渠道</a-col>
-					<a-col :md="4" :sm="6">
-						<a-select  style="width:100%" @change="channelChange" placeholder="请选择发布渠道">
+				<!-- 账号 -->
+					<a-col style="display:flex;align-items:center;" :span="8">
+						<span class="textWidth2">账号</span>
+						<a-select  style="width:calc(100% - 97px);margin-left: 16px;" @change="channelChange" placeholder="请选择账号" :showSearch="true" :filter-option="filterOption" allowClear>
 							<a-select-option value>全部</a-select-option>
 							<a-select-option  v-for="(item,index) in channel" :value="item.id" :key="index">{{item.channelName||'空'}}</a-select-option>
 						</a-select>
@@ -36,12 +33,12 @@
 							<a-select-option :value="index+1" v-for="(item,index) in status" :key="index">{{item}}</a-select-option>
 						</a-select>
 					</a-col> -->
-					 <a-col class="col" style="position:absolute;right:0;">
+				</a-row>
+					 <div class="btnCol"  style="width:170px;">
 						<a-button @click="search" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					</a-col>
-				</a-row>
+					</div>
 				<!-- <a-row type="flex" justify="end" style="margin-top: 8px;">
 					<a-button type="primary" style="background:#3264D5" icon="search" @click="search">查询</a-button>
 				</a-row> -->
@@ -53,7 +50,7 @@
 				<a-table
 				ref="table"
 				size="small"
-				:bordered="false"
+				:bordered="bordered"
 				rowKey="ccId"
 				:columns="columns"
 				:dataSource="dataSource"
@@ -68,11 +65,11 @@
 						</template>
 						{{record.template_name}}
 					</a-popover>
-				</span> 
-					
+				</span>
+
 					<span slot="content" slot-scope="text, record">
 						<a style="color:#595959" onmouseover="this.style.color='#3264D5';" onmouseout="this.style.color='#595959';">{{record.title}}</a>
-					</span> 
+					</span>
 					<span slot="content" slot-scope="text, record">
 						<a-popover title trigger="hover"  style="cursor:pointer">
 							<template slot="content">
@@ -88,9 +85,9 @@
 					>{{record.commentCount?record.commentCount:0}}</span>
 					<span slot="giveCount" slot-scope="text, record">{{record.giveCount?record.giveCount:0}}</span>
 					<span slot="action" slot-scope="text, record">
-					<a  @click="handleTop(record)" v-show="record.send_channel_platform_code==='douyin'&&record.parentId==='0'" style="margin-right: 8px;color:#3264D5;">顶置</a>
+					<a  @click="handleTop(record)" v-show="record.send_channel_platform_code==='douyin'&&record.parentId==='0'" style="margin-right: 8px;color:#3264D5;">置顶</a>
 					<a  @click="handleLook(record)" style="margin-right: 8px;color:#3264D5;">详情</a>
-					<a-popconfirm 
+					<a-popconfirm
 					 title="确定删除吗?" @confirm="() => handleDelete(record)">
 						<a style="color:#3264D5">删除</a>
 					</a-popconfirm>
@@ -103,7 +100,12 @@
 			 <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="commit" class="affirmBtn" style="background-color: #3264D5;">确认</a-button>
+					<a-button type="primary"  @click="commit" 
+					:disabled="disabled"
+					:class="disabled== true ? 'buttonGray' : 'buttonBlue' "
+					>
+					确认
+					</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="cancel" class="abolishBtn">取消</a-button>
@@ -117,7 +119,7 @@
 						<a-col :span="4" style="color: #55565D;">{{content}}</a-col><br/><p></p>
 						<a-col :span="2" style="margin-left:28px;text-align: right; margin-right: 24px;width: 80px;color: #767885;">内容发布人:</a-col>
 						<a-col :span="4" style="color: #55565D;">{{athur}}</a-col><br/><p></p>
-						<a-col :span="2" style="margin-left:28px;text-align: right; margin-right: 24px;width: 80px;color: #767885;">发布渠道:</a-col>
+						<a-col :span="2" style="margin-left:28px;text-align: right; margin-right: 24px;width: 80px;color: #767885;">账号:</a-col>
 						<a-col :span="4" style="color: #55565D;">{{contentB}}</a-col><br/><p></p>
 						<a-col :span="2" style="margin-left:28px;text-align: right; margin-right: 24px;width: 80px;color: #767885;">发布部门:</a-col>
 						<a-col :span="4" style="color: #55565D;">{{contentF}}</a-col><br/><p></p>
@@ -138,7 +140,7 @@
 							:auto-size="{ minRows: 3, maxRows: 5 }"
 							@change="changeText"
 							/>
-							<p style="margin-left: 370px;color: #767885;" v-show="TextFlod">最多输入140个字符</p>
+							<p style="text-align: right;color: #767885;height:20px;margin:0;"><span v-show="TextFlod" style="margin-right:20px;">最多输入140个字符</span><a style="color:#3264D5 ;font-size: 14px;cursor: pointer;" v-if="isOpen" @click="packUp">收起评论</a></p>
 						</a-col><br/><p></p>
 						<a-col :span="2" style="margin-left:28px;text-align: right;margin-right: 24px;width: 80px;color: #767885;">被评论数:</a-col>
 						<a-col :span="4" style="color: #55565D;">{{'无'}}</a-col><br/><p></p>
@@ -160,7 +162,7 @@
 				</a-row>
 			</p> -->
 		</a-modal>
-		<tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+		<tooltip ref="tooltip" :message="message" :type="type"></tooltip>
 	</div>
 </template>
 <script>
@@ -174,8 +176,10 @@
 		components:{ tooltip }  ,
 		data() {
 			return {
+				disabled:false,
+				bordered:false,
 				message:'操作成功',
-      			type:'info', 
+      			type:'info',
 				TextFlod:false,
 				headStyle:{
 				    "text-align":"center",
@@ -215,7 +219,7 @@
 
 					},
 					{
-						title: '发布人部门',
+						title: '发布部门',
 						align: 'center',
 						width:150,
 						dataIndex: 'department_name',
@@ -223,7 +227,7 @@
 						ellipsis: true,
 					},
 					{
-						title: '发布渠道',
+						title: '账号',
 						align: 'center',
 						width:150,
 						dataIndex: 'send_channel_name',
@@ -237,7 +241,7 @@
 					// 	width:150,
 					// 	dataIndex: 'comment_user_id',
 					// 	ellipsis:true,
-					// 	className:'table_title'	
+					// 	className:'table_title'
 					// },
 					{
 						title: '评论内容',
@@ -263,7 +267,7 @@
 						align: 'center',
 						dataIndex: 'ccCreatetime',
 						ellipsis: true,
-						
+
 					},
 					{
 						className:'table_title',
@@ -286,12 +290,6 @@
 
 			}
 		},
-		created() {
-
-		},
-		components:{ tooltip },
-		computed: {},
-
 		mounted() {
 			let user = Vue.ls.get(USER_INFO)
 			let params = {
@@ -307,7 +305,7 @@
 							 this.channel.push(itd)
 						 })
 					})
-					
+
 					console.log(this.channel,'this.channel,')
 				}else{
 					// this.$message.error(res.message)
@@ -317,10 +315,24 @@
 				}
 			})
 			this.getAll()
+			document.onkeydown = this.keydown;
+			
 		},
 		methods: {
+			packUp(){
+				this.isOpen = false;
+				this.TextFlod = false;
+				this.Back = ""
+			},
+			keydown(e){//全局搜索
+				   var currKey=0,e=e||event; 
+				   currKey=e.keyCode||e.which||e.charCode;//支持IE、FF 
+				   if (currKey == 13){
+					  this.search();
+					  }
+			},
 			handleTop(recd){//定置
-				
+
 				let params= {
 					"newstemplateId": recd.template_id,
 						"channelId": recd.send_channel_id,
@@ -343,7 +355,7 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 					}else{
 						this.message = res.message
@@ -351,11 +363,11 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 					}
 				})
-			},	
+			},
 			handleDelete(recd){//删除评论
 				console.log(recd)
 				let params= {
@@ -379,7 +391,7 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 						this.searchQuery();
 					}else{
@@ -388,7 +400,7 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 					}
 				})
@@ -415,7 +427,7 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 					}
 				})
@@ -428,7 +440,7 @@
 				// 		this.$refs.tooltip.visible = true
 				// 		this.$refs.tooltip.alertVisible = true
 				// 		setTimeout(()=>{
-				// 		  this.$refs.tooltip.cancel() 
+				// 		  this.$refs.tooltip.cancel()
 				// 		},3000)
 				// 	}
 				// })
@@ -441,11 +453,6 @@
 			},
 			aduitChange(e){// 选择评论状态
 				this.aduitChangeC=e?e:""
-			},
-			enter(e){
-				if(e.keyCode == 13){
-					this.search()
-				}
 			},
 			search(e){ // 搜索
 				//搜索
@@ -475,12 +482,13 @@
 				this.$refs.tooltip.visible = true
 				this.$refs.tooltip.alertVisible = true
 				setTimeout(()=>{
-				this.$refs.tooltip.cancel() 
+				this.$refs.tooltip.cancel()
 				},3000)
 			},
 			//确定
 			commit(){
 				if(this.Back){
+					this.disabled=true;
 					let params={
 						"newstemplateId": this.newstemplateId,
 						"channelId": this.oneData.send_channel_id,
@@ -498,12 +506,13 @@
 					}
 					backContent(params).then(res=>{
 						if(res.code ===200){
+							this.disabled=false;
 							this.message = res.message
 							this.type='info'
 							this.$refs.tooltip.visible = true
 							this.$refs.tooltip.alertVisible = true
 							setTimeout(()=>{
-							  this.$refs.tooltip.cancel() 
+							  this.$refs.tooltip.cancel()
 							},3000)
 							this.Back = "";
 							//将数据 归纳在 一块 提交到 后台
@@ -516,19 +525,24 @@
 							this.$refs.tooltip.visible = true
 							this.$refs.tooltip.alertVisible = true
 							setTimeout(()=>{
-							  this.$refs.tooltip.cancel() 
+							  this.$refs.tooltip.cancel()
 							},3000)
 							this.Back = "";
 						}
 					})
+				}else{
+					this.visible=false;
+					this.isOpen=false;
 				}
-				
-				
+
+
 			},
 			//取消
 			cancel(){
 				this.visible=false;
 				this.isOpen=false;
+				this.TextFlod=false;
+				this.Back = "";
 			},
 			//回复
 			revert(e){
@@ -559,16 +573,19 @@
 						this.$refs.tooltip.visible = true
 						this.$refs.tooltip.alertVisible = true
 						setTimeout(()=>{
-						  this.$refs.tooltip.cancel() 
+						  this.$refs.tooltip.cancel()
 						},3000)
 					}
 					})
 				},
-		}
+		},
+		beforeDestroy(){
+			document.onkeydown=null;
+		}		
 	}
 
 </script>
-<style lang="scss" scoped> 
+<style lang="scss" scoped>
 	.top_row {
 		margin: 15px 0;
 		border-bottom: 1px dashed #dfe0eb;
@@ -630,4 +647,16 @@
 			color: red;
 		}
 	}
+	.buttonGray{
+			background: rgb(245,245,245);
+			color: #55565D;;
+			width: 115px;
+			height: 36px;
+		}
+	.buttonBlue{
+			background: #3264D5;
+			color: white;
+			width: 115px;
+			height: 36px;
+		}
 </style>

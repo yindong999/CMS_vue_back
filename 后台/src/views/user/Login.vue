@@ -52,7 +52,7 @@
             </a-button>
           </a-form-item>
     </a-form>
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 
@@ -77,11 +77,11 @@
     DEFAULT_MULTI_PAGE  } from "@/store/mutation-types"
   import { generateIndexRouter } from "@/utils/util"
   export default {
-    components:{ tooltip }, 
+    components:{ tooltip },
     data () {
       return {
         message:'',
-        type:'info', 
+        type:'info',
         loading:false,
         checkedPwd:false,
         password:'',
@@ -129,6 +129,7 @@
       Vue.ls.remove(DEFAULT_FIXED_SIDEMENU)
       Vue.ls.remove(DEFAULT_CONTENT_WIDTH_TYPE)
       Vue.ls.remove(DEFAULT_CONTENT_WIDTH_TYPE)
+      Vue.ls.remove(DEFAULT_COLOR)
       Vue.ls.remove(DEFAULT_COLOR_WEAK)
       Vue.ls.remove(DEFAULT_FIXED_HEADER_HIDDEN)
       Vue.ls.remove(DEFAULT_MULTI_PAGE)
@@ -177,6 +178,7 @@
             loginParams.password = this.password
             loginParams.loginType = 2            //loginType标注是前台登录还是后台登陆
             this.Login(loginParams).then((res) => {
+              console.log('res',res)
               this.loginSuccess();
             }).catch((err) => {
               // if(err.code!==400){
@@ -219,7 +221,7 @@
           this.$refs.tooltip.visible = true
           this.$refs.tooltip.alertVisible = true
           setTimeout(()=>{
-            this.$refs.tooltip.cancel() 
+            this.$refs.tooltip.cancel()
           },3000)
 
         // this.loginBtn = false;
@@ -286,6 +288,7 @@ label {
     padding:20px;
     background:#fff;
     border-radius:5px;
+    margin-top: -60px;
   }
   .user-layout-login {
     label {

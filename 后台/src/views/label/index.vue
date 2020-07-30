@@ -3,25 +3,36 @@
   <div>
     <!-- 上部筛选区域 -->
     <a-card title="">
-      <a-form layout="inline">
-        <a-row :gutter="24" style="display:flex;align-items:center;">
-          <a-col>标签名称</a-col>
-          <a-col :md="4" :sm="6">
+      <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle">
+        <a-row class="leftDiv">
+          <a-col style="display:flex;align-items:center;" :span="8">
+            <span class="textWidth4">标签名称</span>
             <a-input
-              style="width: 100%"
+              style="width:calc(100% - 97px);margin-left: 16px;"
               allowClear
               placeholder="请输入标签"
               v-model="queryParam.tagName"
             ></a-input>
           </a-col>
-          <a-col>部门</a-col>
-          <a-col :md="4" :sm="6">
+          <a-col style="display:flex;align-items:center;" :span="8">
+            <span class="textWidth4">标签状态</span>
+            <a-select style="width:calc(100% - 97px);margin-left: 16px;" allowClear placeholder="请选择状态" @change="selectTagStatus" :showSearch="true" :filter-option="filterOption">
+              <a-select-option
+                :value="item.value"
+                v-for="(item,index) in selectStatus"
+                :key="index"
+              >{{item.name}}</a-select-option>
+            </a-select>
+          </a-col>
+          <a-col style="display:flex;align-items:center;" :span="8" v-if="showDepSel">
+            <span class="textWidth2">部门</span>
             <a-select
-              style="width: 100%"
-              :showSearch="true"
+              style="width:calc(100% - 97px);margin-left: 16px;"
               allowClear
               placeholder="请选择部门"
               @change="selectDepartment"
+              :showSearch="true"  
+              :filter-option="filterOption"
             >
               <a-select-option
                 v-for="(item,key) in departmentData"
@@ -30,22 +41,13 @@
               >{{item.label}}</a-select-option>
             </a-select>
           </a-col>
-          <a-col>标签状态</a-col>
-          <a-col :md="4" :sm="6">
-            <a-select style="width: 100%" allowClear placeholder="请选择状态" @change="selectTagStatus">
-              <a-select-option
-                :value="item.value"
-                v-for="(item,index) in selectStatus"
-                :key="index"
-              >{{item.name}}</a-select-option>
-            </a-select>
-          </a-col>
-           <a-col class="col" style="position:absolute;right:0;">
+
+        </a-row>
+           <div class="btnCol" style="width:170px;">
 						<a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					</a-col>
-        </a-row>
+					</div>
       </a-form>
       <!-- 查询按钮 -->
       <!-- <a-row type="flex" justify="end" style="margin-top:8px;">
@@ -64,6 +66,7 @@
         v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn"
         type="primary"
         icon="plus"
+        style="padding:0 16px;position:absolute;right:32px;"
         @click="addTags"
       >新增</a-button>
       <a-table
@@ -73,6 +76,7 @@
         :pagination="ipagination"
         :loading="loading"
         row-key="id"
+        :bordered="bordered"
         @change="handleTableChange"
       >
         <span slot="remarks" slot-scope="text, record">
@@ -87,10 +91,10 @@
             >{{record.remarks}}</a>
           </a-popover>
         </span>
-        <span slot="tagStatus" slot-scope="text, record">
+        <!-- <span slot="tagStatus" slot-scope="text, record">
           <span v-if="record.tagStatus==='1'" style="color:#55565D;">下线</span>
           <span v-else style="color:#1DCCC9;">启用</span>
-        </span>
+        </span> -->
         <span slot="action" slot-scope="text, record">
           <a style="color:#3264D5;">
             <a v-if="record.tagStatus==='0'">
@@ -134,7 +138,7 @@
       <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary" @click="submitForm" class="affirmBtn">确认</a-button>
+					<a-button type="primary" @click="submitForm" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="cancleForm" class="abolishBtn">取消</a-button>
@@ -144,12 +148,23 @@
        <a-form :form="form" >
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="标签分类" style="margin-bottom:16px;">
             <!-- 标签分类 -->
-            <a-input placeholder="请输入标签分类" style="color:#55565D;"
+            <a-input placeholder="请输入标签分类" style="color:#55565D;width:40%;"
              v-decorator="['categoryName', validatorRules.categoryName]"></a-input>
+             <!-- <ul v-if="show" style="max-height:150px;
+             overflow-y:auto;
+             border:outline: none;
+             list-style: none;padding-left:0;position:absolute;z-index:1050;
+             border-radius:4px;width:200px;
+             box-shadow:0 0 3px 4px #EEEEEE;">
+                <li class="sel_item"
+                :style="{background:index===currentNum?'#F0F7FF':'#fff'}"
+                v-for="(item,index) in tagsCategory" :key="index"
+                @mouseover="current(index)" @mouseout="leave(index)" @click="selectCurrent">{{item}}</li>
+             </ul> -->
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="标签名称" style="margin-bottom:16px;">
             <!-- 标签名称 -->
-            <a-input placeholder="请输入标签名称" style="color:#55565D;"
+            <a-input placeholder="请输入标签名称" style="color:#55565D;width:40%;"
              v-decorator="['tagName', validatorRules.tagName]"></a-input>
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="标签说明" style="margin-bottom:16px;">
@@ -189,7 +204,16 @@ export default {
   mixins: [JeecgListMixin],
   components:{ tooltip },
   data() {
-    return { 
+    return {
+      tagsCategory:[
+        "标签1",
+        "标签2",
+        "标签3",
+        "标签4"
+        ],
+      currentNum:-99,
+      show:false,
+      bordered:false,
       message:'操作成功',
       type:'info',
       records:null,
@@ -308,16 +332,16 @@ export default {
         //   scopedSlots: { customRender: 'remarks' },
         //   className: 'table_title'
         // },
-        {
-          title: '标签状态',
-          dataIndex: 'tagStatus',
-          key: 'tagStatus',
-          ellipsis: true,
-          align: 'center',
-          width: 100,
-          className: 'table_title',
-          scopedSlots: { customRender: 'tagStatus' }
-        },
+        // {
+        //   title: '标签状态',
+        //   dataIndex: 'tagStatus',
+        //   key: 'tagStatus',
+        //   ellipsis: true,
+        //   align: 'center',
+        //   width: 100,
+        //   className: 'table_title',
+        //   scopedSlots: { customRender: 'tagStatus' }
+        // },
         {
           title: '时间',
           dataIndex: 'createDate',
@@ -349,11 +373,12 @@ export default {
         list: '/cms/tag/listTag',
         delete: '/cms/tag/delete'
       },
-      patrn:/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im,//标签吧名称和标签分了的校验规则
+      patrn:/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘'，。、]/im,//标签把名称和标签分了的校验规则
       departmentData: [], // 部门
       showDepSel: true,
       addOrEdit: true, // 点击的是新增还是编辑；true:新增，false:编辑
-      form: this.$form.createForm(this, { name: 'addLabel' })
+      //操作按钮禁用
+      btnDisabled:false
     }
   },
   watch: {
@@ -388,20 +413,43 @@ export default {
     if (auth.hasOwnProperty(this.$route.name)) {
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(() => {
-      var dom = document.getElementsByClassName('ant-table-small')[0]
-      dom.style.border = 'none'
-    }, 200)
+    // setTimeout(() => {
+    //   var dom = document.getElementsByClassName('ant-table-small')[0]
+    //   dom.style.border = 'none'
+    // }, 200)
     // 获取用户信息，判断当前用户是否有系统管理员角色，有的话，查询条件中显示部门，否则不显示；
     var userInfo = this.userInfo()
     if (userInfo.roleName.search('系统管理员') != -1) {
       this.showDepSel = true
     } else {
       this.showDepSel = false
+      this.queryParam.createDepartmentId = userInfo.userDepartmentId
     }
   },
   methods: {
     ...mapGetters(['userInfo']),
+    // current(num){
+    //   this.currentNum = num
+    // },
+    // leave(num){
+    //   this.currentNum = -99
+    // },
+    // selectCurrent(e){
+    //   console.log(e.target.innerText)
+    //   console.log(this.model)
+    //   var obj = {categoryName:e.target.innerText}
+    //    this.form.setFieldsValue(
+    //             pick(obj, 'categoryName')
+    //           )
+    //   this.show = false
+    // },
+    // tagsChange(){
+    //   this.show = true
+    // },
+    // losePoint(){
+    //   this.show = false
+    // },
+
     // 获取部门数据
     getDepartmentList() {
       this.departmentData = []
@@ -454,7 +502,7 @@ export default {
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
     },
     handleSearch(e) {
@@ -477,7 +525,7 @@ export default {
          this.addOrEdit = JSON.stringify(this.records) === '{}' ? true : false
             this.form.resetFields()
             this.model = Object.assign({}, this.records)
-
+          console.log( this.model)
             this.isShow = true
             this.$nextTick(() => {
               this.form.setFieldsValue(
@@ -570,6 +618,7 @@ export default {
     submitForm() {
           this.form.validateFields((err, values) => {
           if (!err) {
+            this.btnDisabled = true
             this.confirmLoading = true
             let formData = Object.assign(this.model, values)
             let obj = this.model.id ? tagUpdate(formData) : tagAdd(formData)
@@ -593,13 +642,14 @@ export default {
               }
             }).finally(() => {
                this.confirmLoading = false
+              this.btnDisabled = false
                this.form.resetFields()
                this.model = {}
                this.editOrUse = false
             })
           }
         })
-    }
+    },
   }
 }
 </script>
@@ -626,4 +676,12 @@ export default {
   top: 32px;
   color: #e4586a;
 }
+// .sel_item{
+//   line-height: 22px;
+//   padding: 5px 12px;
+//   white-space: nowrap;
+//   text-overflow: ellipsis;
+//   cursor: pointer;
+//   transition: background 0.3s ease;
+// }
 </style>

@@ -7,7 +7,7 @@
   >
     <div v-if="mode === 'sidemenu'" class="header" :class="theme">
       <div class="left">
-        <!-- <span>内容营销中心</span>   -->
+        <!-- <span>内容中心</span>   -->
         <!-- <a-icon
           v-if="device==='mobile'"
           class="trigger"
@@ -35,12 +35,12 @@
           <div v-if="device !== 'mobile'" :style="topMenuStyle.topSmenuStyle">
             <s-menu mode="horizontal" :menu="menus" :theme="theme"></s-menu>
           </div>
-          <a-icon
+          <!-- <a-icon
             v-else
             class="trigger"
             :type="collapsed ? 'menu-fold' : 'menu-unfold'"
             @click="toggle"
-          ></a-icon>
+          ></a-icon> -->
         </div> 
         <user-menu
           class="header-index-right"

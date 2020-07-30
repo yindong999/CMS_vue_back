@@ -1,12 +1,10 @@
 import { axios } from '@/utils/request'
 //正式环境
-//const baseUrl = 'http://haier-cms-prod.qd-aliyun.haier.net'
+// const baseUrl = 'http://haier-cms-prod.qd-aliyun.haier.net'
+// const baseUrl = 'http://nryx.haier.net' //新域名
 // //测试环境
-const baseUrl = 'http://cms-main2.qd-aliyun.haier.net'
-// const baseUrl = 'http://192.168.101.85'
-// const baseUrl = 'http://192.168.43.195'
-// const baseUrl = 'http://192.168.101.46'
-// const baseUrl = 'http://10.189.34.32'
+const baseUrl = 'http://cms-main3.qd-aliyun.haier.net'
+// const baseUrl = 'http://10.0.0.28'
 /**
  * @param parameter
  * @returns {*}

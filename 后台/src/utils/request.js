@@ -59,13 +59,13 @@ const err = (error) => {
           })
         }
         break
-      default:
-        notification.error({
-          message: '系统提示',
-          description: data.message,
-          duration: 4
-        })
-        break
+      // default:
+      //   notification.error({
+      //     message: '系统提示',
+      //     description: data.message,
+      //     duration: 4
+      //   })
+      //   break
     }
   }
   return Promise.reject(error)

@@ -3,7 +3,7 @@
   <div>
     <a-card :bordered="false" title="" style="margin:0 auto;margin-top:0px;" :bodyStyle="bodyStyle" :headStyle="headStyle2">
       <!-- 输入框，查询按钮 -->
-      <a-row style="display:flex;align-items:center;" :gutter="24">
+      <a-row style="display:flex;align-items:center;" :gutter="16">
         <a-col>标题</a-col>
         <a-col>
           <a-input placeholder="请输入内容标题" style="200px" allowClear v-model="queryParams" />
@@ -18,7 +18,7 @@
       </a-card>
      <a-card title="消息明细表" :bordered="false" style="margin:0 auto;margin-top:16px;" :headStyle="headStyle" :bodyStyle="bodyStyle2">
       <!-- 全部，已读，未读，标记为已读按钮 -->
-        <a-button v-if="authButton.hasOwnProperty('markHasReadBtn')&&authButton.markHasReadBtn&&which!==2" slot="extra" style="position:absolute;right:31px;top:11px;" type="primary" @click="markRead">标记为已读</a-button>
+        <a-button v-if="authButton.hasOwnProperty('markHasReadBtn')&&authButton.markHasReadBtn&&which!==2" slot="extra" type="primary" @click="markRead">标记为已读</a-button>
         <a-row style="margin-bottom:16px;">
           <a-col :span="21">
             <a-button :class="['btn',which===1?'current':'noSelect']" @click="msgState(1,'')">全部({{totalAnnouncement}})</a-button>
@@ -33,7 +33,7 @@
             style="height:500px;"
             ref="table"
             size="small"
-            :bordered="false"
+            :bordered="bordered"
             rowKey="id"
             :columns="columns"
             :dataSource="dataSource"
@@ -102,6 +102,7 @@ export default {
   mixins: [JeecgListMixin],
   data() {
     return { 
+      bordered:false,
       message:'操作成功',
       type:'info', 
       unRead:0,
@@ -222,12 +223,12 @@ export default {
     if(auth.hasOwnProperty(this.$route.name)){
       this.authButton = auth[this.$route.name]
     }
-      setTimeout(() => {
-          var dom = document.getElementsByClassName("ant-table-small")[0]
-          var dom2 = document.getElementsByClassName("ant-table-selection-column")[0]
-          dom.style.border= "none"
-          dom2.style.background= "#F7F7FB"
-    }, 200);
+    //   setTimeout(() => {
+    //       var dom = document.getElementsByClassName("ant-table-small")[0]
+    //       var dom2 = document.getElementsByClassName("ant-table-selection-column")[0]
+    //       dom.style.border= "none"
+    //       dom2.style.background= "#F7F7FB"
+    // }, 200);
 
   },
   methods: { 
@@ -256,6 +257,16 @@ export default {
     },
     // 点击标记为已读按钮触发
      markRead() { 
+      if(!this.anntIds){
+        this.message = "请先选择需要标记的消息"
+        this.type = "error"
+        this.$refs.tooltip.visible = true
+        this.$refs.tooltip.alertVisible = true
+        setTimeout(()=>{
+          this.$refs.tooltip.cancel()
+        },3000)
+        return 
+      }
       readAll({ anntIds: this.anntIds }).then(res => {
         this.selectedRowKeys = []
         // 请求成功

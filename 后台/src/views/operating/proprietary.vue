@@ -24,9 +24,9 @@
         </a-row> -->
       </a-card>
     </div>
-    <!-- 自有发布渠道 -->
+    <!-- 自有账号 -->
     <div class="self">
-      <a-card title="自有发布渠道" :bordered="false" style="width: 100%;">
+      <a-card title="自有账号" :bordered="false" style="width: 100%;">
         <!-- <a-row>
           <a-col :span="24">
             <a-button type="primary">+ 新增</a-button>

@@ -13,7 +13,7 @@
     <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="handleOk" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="handleOk" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="handleCancel" class="abolishBtn">取消</a-button>
@@ -41,6 +41,8 @@
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="用户部门">
           <a-select
+            allowClear
+            :filter-option="filterOption"
             :showSearch="true"
             placeholder="请选择用户部门"
             v-decorator="[ 'userDepartmentId', validatorRules.userDepartmentId]"
@@ -54,6 +56,8 @@
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="用户角色">
           <a-select
+            allowClear
+            :filter-option="filterOption"
             :showSearch="true"
             :showArrow="true"
             placeholder="请选择用户角色"
@@ -76,7 +80,7 @@
       </a-form>
     </a-spin>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </a-modal>
 </template>
 
@@ -134,7 +138,9 @@ export default {
         userEmail: {
           rules: [{ required: true, message: '请输入电子邮箱!' }, { validator: this.validateEmail }]
         }
-      }
+      },
+      //操作按钮禁用
+      btnDisabled:false
     }
   },
   created() {},
@@ -154,7 +160,7 @@ export default {
       if (this.model && this.model.userType) {
         this.userType = Number(this.model.userType)
       }
-      let arr = [] 
+      let arr = []
       if(this.model && this.model.userRoleGroup && this.model.userRoleGroup.length > 0){
         this.model.userRoleGroup.forEach(res => {
           arr.push(res.userRoleId)
@@ -181,6 +187,7 @@ export default {
       // 触发表单验证
       this.form.validateFields((err, values) => {
         if (!err) {
+          this.btnDisabled = true
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           let param = { ...formData }
@@ -255,8 +262,8 @@ export default {
                 this.userType = 1
                 this.visible = false
               } else if(res.code!==400){
-                // that.$message.warning(res.message) 
-                this.message = res.message  
+                // that.$message.warning(res.message)
+                this.message = res.message
                 this.type = "error"
                 this.warnMethod();
               }
@@ -266,6 +273,7 @@ export default {
               this.$emit('close')
               // this.userType = 1
               this.roleDisabled = false
+              this.btnDisabled = false
             })
         }
       })
@@ -274,7 +282,7 @@ export default {
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
     },
     handleCancel() {
@@ -333,7 +341,13 @@ export default {
           callback('请输入正确格式的邮箱!')
         }
       }
-    }
+    },
+    //下拉框过滤
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.indexOf(input) >= 0
+      );
+    },
   }
 }
 </script>

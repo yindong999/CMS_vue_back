@@ -173,7 +173,7 @@ const user = {
             //         meta:{
             //           keepAlive: false,
             //           internalOrExternal: false,
-            //           title: "自有发布渠道管理"
+            //           title: "自有账号管理"
             //         },
             //         name: "operating-proprietary",
             //         id: "xxx"
@@ -185,7 +185,7 @@ const user = {
             //         meta:{
             //           keepAlive: false,
             //           internalOrExternal: false,
-            //           title: "第三方发布渠道管理"
+            //           title: "第三方账号管理"
             //         },
             //         name: "operating-third",
             //         id: "xxx"
@@ -327,23 +327,24 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.loginResult.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.userName, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(AVATAR, 1?require('@/assets/default.png'):'', 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(AVATAR, userInfo.userProfile?userInfo.userProfile:require('@/assets/default.png'), 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_AUTH,authData);
             Vue.ls.set(MENU_DATA, menuData, 7 * 24 * 60 * 60 * 1000)
+            localStorage.setItem("isFirst",'true')
             // sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
             // sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));
             commit('SET_TOKEN', result.loginResult.token)
             commit('SET_INFO', userInfo)
             commit('SET_NAME', { username: userInfo.userName, welcome: welcome() })
-            commit('SET_AVATAR', 1?require('@/assets/default.png'):'')
+            commit('SET_AVATAR', userInfo.userProfile?userInfo.userProfile:require('@/assets/default.png'))
             commit('SET_BUTTON', authData)
             if (menuData && menuData.length > 0) {
               commit('SET_PERMISSIONLIST', menuData)
             } else {
-              reject({message:'您没有该系统的任何权限，请联系管理员设置'})
+              reject({message:'您暂无权限，请联系管理员设置'})
             }
             resolve(response)
-          }else{
+          }else if(response.code !== 400){
             reject(response)
           }
         }).catch(error => {

@@ -21,6 +21,8 @@ const userList = (params) => postAction("/sys/user/list", params);
 const addDepartment = (params) => postAction("/cms/department/add", params);
 const editDepartment = (params) => postAction("/cms/department/update", params);
 const departmentList = (params) => postAction("/cms/department/list", params);
+// 内容管理发布部门
+const contentDepartment = (params) => postAction("/cms/department/listByDepartmentType", params);
 
 //营销管理】
 
@@ -32,6 +34,9 @@ const findCenter = (params) => postAction("/cms/classics/case/list", params);
 //营销管理】 统计
 const FindeBy = (params) => postAction("/cms/classics/case/download/info/list", params);
 
+//渠道管理
+const changeDownToUp = (params) => postAction("/cms/channel/info/channelOn", params);
+const changeUpToDown = (params) => postAction("/cms/channel/info/channelOff", params);
 
 
 
@@ -41,7 +46,7 @@ const getPermissionList = (params) => getAction("/cms/permission/queryRolePermis
 const saveRolePermission = (params) => postAction("/cms/permission/saveRolePermission", params);
 
 //内容审核
-const channelList = (params) => postAction("/cms/channel/info/getChannelListByUserCode", params); //查询发布渠道                                                 //查询发布渠道
+const channelList = (params) => postAction("/cms/channel/info/getChannelListByUserCode", params); //查询账号                                                 //查询账号
 const auditList = (params) => postAction("/cms/process/manage/reviewcontentList", params); //内容审核列表查询
 const auditIng = (params) => postAction("/cms/process/manage/review", params); //内容审核
 const auditDetail = (params) => getAction("/cms/content/newstemplate/getContentInfo", params); //查询详情
@@ -51,7 +56,7 @@ const totalCount = (params) => getAction("/cms/sys/content/statistics/totalCount
 // 首页趋势统计
 const trend = (params) => getAction("/cms/sys/content/statistics/trend", params);
 
-// 第三方发布渠道管理
+// 第三方账号管理
 const thirdPublishChannelList = (params) => postAction("/cms/channel/info/list", params); // 获取全部数据
 const thirdPublishChannelOne = (params) => postAction("/cms/channel/info/detail", params); // 根据主键获取单条数据
 const thirdPublishChannelAddOne = (params) => postAction("/cms/channel/info/add", params); // 添加单条数据
@@ -124,11 +129,11 @@ const backContent = (params)=> postAction("/cms/content/comment/createComment", 
 //发布类型
 const ContentStatusData = [
     { label: '草稿', value: '0' },
-    { label: '审核中', value: '1' },
-    { label: '审核通过', value: '2' },
-    { label: '审核失败', value: '3' },
+    { label: '待审核', value: '1' },
+    { label: '待发布', value: '2' },
+    { label: '驳回待修改', value: '3' },
     { label: '已发布', value: '4' },
-    { label: '发布失败', value: '5' },
+    { label: '发布失败', value: '5' }
 ];
 //部门类型枚举映射
 const DepartmentTypeData = [
@@ -197,5 +202,8 @@ export {
 	contentTop,
 	findCenter,
 	downLoad,
-	FindeBy
+	FindeBy,
+	changeDownToUp,
+    changeUpToDown,
+    contentDepartment
 }

@@ -296,3 +296,11 @@ export function pushIfNotExist(array, value, key) {
   array.push(value)
   return true
 }
+// 对返回的媒体平台进行过滤，对微信，微博，抖音的保留；其余的过滤掉
+
+export function filterMediaPlatform(res) {
+  var newObj  = res.filter(item=>{
+    return item.mediaPlatformCode === 'wechat' || item.mediaPlatformCode === 'sinaBlog' || item.mediaPlatformCode === 'douyin'
+  }) 
+  return newObj
+}

@@ -4,18 +4,18 @@
     <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;">
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery"> 
-          <a-row style="display:flex;align-items:center;" :gutter="24">
-            <a-col>角色名称</a-col>
-            <a-col :md="4" :sm="6">
-              <a-input placeholder="请输入角色名称" v-model="queryParam.roleName" allowClear></a-input>
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle"> 
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">角色名称</span>
+              <a-input style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请输入角色名称" v-model="queryParam.roleName" allowClear></a-input>
             </a-col>
-             <a-col class="col" style="position:absolute;right:0;">
+          </a-row>
+             <div class="btnCol" style="width:170px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					  </a-col>
-          </a-row>
+					  </div>
           <!-- <a-row style="margin-top:8px;" type="flex" justify="end">
             <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
           </a-row> -->
@@ -24,13 +24,13 @@
     </a-card>
     <a-card :bordered="false" :hoverable="true" title="角色列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
       <!-- 操作按钮区域 -->
-      <a-button slot="extra" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus" style="position: absolute;top: 12px;right:32px;">新增</a-button>
+      <a-button slot="extra" style="padding:0 16px;position:absolute;right:32px;" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <div>
         <a-table
           style="height:500px"
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
@@ -76,6 +76,7 @@
     components: { RolePermissionModal, RoleModal,RoleMenuModal,tooltip },
     data () {
       return {
+        bordered:false,
         message:'操作成功',
         type:'info',
         headStyle:{
@@ -152,10 +153,10 @@
       if(auth.hasOwnProperty(this.$route.name)){
         this.authButton = auth[this.$route.name]
       }
-      setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    //   setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
     },
     methods: {
       //打开编辑菜单抽屉

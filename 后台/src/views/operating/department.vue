@@ -4,25 +4,25 @@
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row :gutter="24" style="display:flex;align-items:center;">
-            <a-col> 部门类型</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select :showSearch="true" allowClear placeholder="请选择部门类型" style="width:100%;" @change="selectDepartment">
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">部门类型</span>
+              <a-select :showSearch="true" allowClear placeholder="请选择部门类型" style="width:calc(100% - 97px);margin-left: 16px;" @change="selectDepartment" :filter-option="filterOption">
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option v-for="(item,key) in departmentTypeData" :value="item.value" :key="key" >{{item.label}}</a-select-option>
               </a-select>
             </a-col>
-            <a-col>部门名称</a-col>
-            <a-col :md="4" :sm="6">
-                <a-input allowClear v-model="queryParam.departmentName" placeholder="请填写部门名称"></a-input>
-            </a-col> 
-             <a-col class="col" style="position:absolute;right:0;">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">部门名称</span>
+                <a-input style="width:calc(100% - 97px);margin-left: 16px;" allowClear v-model="queryParam.departmentName" placeholder="请填写部门名称"></a-input>
+            </a-col>
+          </a-row>
+           <div class="btnCol"  style="width:170px;">
 						<a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					</a-col>
-          </a-row>
+					</div>
           <!-- <a-row type="flex" justify="end" style="margin-top: 8px;">
               <a-button type="primary" @click="searchQuery" icon="search" style="float:right;">查询</a-button>
           </a-row> -->
@@ -31,13 +31,13 @@
     </a-card>
     <a-card :bordered="false" :hoverable="true" title="部门列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
       <!-- 操作按钮区域 -->
-        <a-button slot="extra" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus" style="position: absolute;top: 12px;right:32px;">新增</a-button>
+        <a-button slot="extra" style="padding:0 16px;position:absolute;right:32px;" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <div>
         <a-table
           style="height:500px"
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
@@ -56,7 +56,7 @@
       <!-- 新增编辑部门信息 -->
       <department-modal ref="modalForm" @ok="modalFormOk"></department-modal>
     </a-card>
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 <script>
@@ -72,6 +72,7 @@
     components: { DepartmentModal,tooltip },
     data () {
       return {
+        bordered:false,
         message:'操作成功',
         type:'info',
         headStyle:{
@@ -104,7 +105,7 @@
 //           `${(this.ipagination.current-1)*(this.ipagination.pageSize)+(index+1)}`//当前页数减1乘以每一页页数再加当前页序号+1
 //           )
 //           }
-//         },  
+//         },
           {
             title: '部门名称',
             align: 'center',
@@ -168,7 +169,7 @@
         // startDate:'',
         // endDate:''
       }
-    },  
+    },
     mounted(){
       //根据当前页面路由的name去匹配按钮权限，取出当前页面的按钮权限并赋值给authButton
       let auth = Vue.ls.get(USER_AUTH)
@@ -176,17 +177,17 @@
       if(auth.hasOwnProperty(this.$route.name)){
         this.authButton = auth[this.$route.name]
       }
-     setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    //  setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
     },
     methods: {
       selectDepartment(e){
         this.queryParam.departmentType = e!==""?e:""
       },
       // 选择日期时触发
-      // onChangeDate(date, dateString){   
+      // onChangeDate(date, dateString){
       //   console.log(date, dateString)
       //   // 开始日期
       //   var startDate = dateString[0]

@@ -12,14 +12,14 @@
     <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="handleOk" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="handleOk" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="handleCancel" class="abolishBtn">取消</a-button>
 				</a-config-provider>
 				</div>
 			</template>
-      
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item
@@ -30,7 +30,7 @@
         </a-form-item>
       </a-form>
     </a-spin>
-     <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </a-modal>
 </template>
 
@@ -66,6 +66,8 @@
               { min: 1, max: 50, message: '长度不超过 50 个字符', trigger: 'blur' }
             ]}
         },
+        //操作按钮禁用
+        btnDisabled:false
       }
     },
     created () {
@@ -98,7 +100,7 @@
         this.$refs.tooltip.visible = true
         this.$refs.tooltip.alertVisible = true
         setTimeout(()=>{
-          this.$refs.tooltip.cancel() 
+          this.$refs.tooltip.cancel()
         },3000)
       },
       handleOk () {
@@ -106,6 +108,7 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+            this.btnDisabled = true
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values);
             let obj;
@@ -131,7 +134,7 @@
                 }
                 this.type = "info"
                 this.warnMethod();
-                
+
                 that.$emit('ok');
               }else if(res.code!==400){
                 // that.$message.warning(res.message);
@@ -141,6 +144,7 @@
               }
             }).finally(() => {
               that.confirmLoading = false;
+              this.btnDisabled = false
               that.close();
             })
           }

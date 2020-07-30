@@ -3,22 +3,26 @@
   <div>
     <a-card title="">
       <a-row>
-        <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery">
-          <a-row type="flex" :gutter="24" style="display:flex;align-items:center;">
-            <a-col>部门</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select placeholder="请选择部门" @change="selectDept" allowClear v-model="dept">
+        <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery" class="formStyle">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth2">部门</span>
+              <!-- <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择部门" @change="selectDept" :showSearch="true" :filter-option="filterOption" allowClear v-model="dept">
                 <a-select-option value>全部</a-select-option>
                 <a-select-option
                   :value="value.id"
                   v-for="(value,index) in departmentData"
                   :key="index"
                 >{{value.dataName}}</a-select-option>
-              </a-select>
+              </a-select> -->
+              <!-- 部门只有一个，暂时换成div -->
+              	<div style="color:#55565D;width:calc(100% - 97px);margin-left: 16px;border-radius: 4px; line-height:30px;
+					        background:#F5F5F5;height:32px;border: 1px solid #d9d9d9;padding-left:11px;">
+				        	中国区整合营销</div>
             </a-col>
-            <a-col>活动节点</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select placeholder="请选择活动节点" @change="selectNode" allowClear>
+            <a-col style="display:flex;align-items:center;position: relative;left: -28px;" :span="8">
+              <span class="textWidth4">活动节点</span>
+              <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择活动节点" @change="selectNode" :showSearch="true" :filter-option="filterOption" allowClear>
                 <a-select-option value>全部</a-select-option>
                 <a-select-option
                   :value="value.id"
@@ -27,9 +31,9 @@
                 >{{value.dataName}}</a-select-option>
               </a-select>
             </a-col>
-            <a-col>物料类型</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select placeholder="请选择物料类型" @change="selectType" allowClear>
+            <a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+              <span class="textWidth4">物料类型</span>
+              <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择物料类型" @change="selectType" :showSearch="true" :filter-option="filterOption" allowClear>
                 <a-select-option value>全部</a-select-option>
                 <a-select-option
                   :value="value.id"
@@ -38,12 +42,13 @@
                 >{{value.dataName}}</a-select-option>
               </a-select>
             </a-col>
-              <a-col class="col" style="position:absolute;right:0;padding-right:0;">
+     
+          </a-row>
+            <div class="btnCol"  style="width:170px;right:0;top:0;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					  </a-col>
-          </a-row>
+					  </div>
         </a-form>
       </a-row>
       <!-- <a-row style="margin-top:8px;">
@@ -63,12 +68,13 @@
         slot="extra"
         type="primary"
         icon="plus"
+        style="padding:0 16px;position:absolute;right:32px;"
         @click="addModelShow"
       >新增</a-button>
       <a-table
         :columns="columns"
         size="small"
-        :bordered="false"
+        :bordered="bordered"
         style="height:500px"
         ref="table"
         rowKey="id"
@@ -151,7 +157,11 @@
      <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="submitForm" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="submitForm" 
+
+					:disabled="disabled"
+					:class="disabled== true ? 'buttonGray' : 'buttonBlue' "
+					>确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="handleCancel" class="abolishBtn">取消</a-button>
@@ -162,7 +172,10 @@
         <a-form :form="form">
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门">
             <!-- 目前部门就一个，使用输入框 -->
-            <a-input :disabled="true" v-model="deptName" style="color:#55565D;"></a-input>
+            <!-- <a-input :disabled="true" v-model="deptName" style="color:#55565D;"></a-input> -->
+            	<div style="color:#55565D;width:100%;border-radius: 4px; line-height:30px;
+					background:#F5F5F5;height:32px;border: 1px solid #d9d9d9;padding-left:11px;margin: 4px 0;">
+					中国区整合营销</div>
             <!-- 后期有多个部门的话，使用下拉选 -->
             <!-- <a-select
                :disabled="true"
@@ -180,9 +193,9 @@
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="活动节点">
             <a-select
-              :showSearch="true"
               :showArrow="true"
               placeholder="请选择活动节点"
+              :showSearch="true" :filter-option="filterOption" allowClear
               v-decorator="['activeNode', validatorRules.activeNode]"
             >
               <a-select-option
@@ -194,7 +207,7 @@
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="物料类型">
             <a-select
-              :showSearch="true"
+              :showSearch="true" :filter-option="filterOption" allowClear
               :showArrow="true"
               placeholder="请选择物料类型"
               v-decorator="['materialType', validatorRules.materialType]"
@@ -306,7 +319,7 @@
       </a-row>
     </a-modal>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 
@@ -322,6 +335,8 @@ export default {
   components:{ tooltip },
   data() {
     return {
+	  disabled:false,
+      bordered:false,
       message:'操作成功',
       type:'info',
       deptName:'',
@@ -369,7 +384,6 @@ export default {
       confirmLoading: false,
       showWarn: true,
       showWarn2: false,
-      materialType: '',
       titles: '新增物料',
       add: {
         id: '',
@@ -511,12 +525,12 @@ export default {
     if (auth.hasOwnProperty(this.$route.name)) {
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(() => {
-      setTimeout(() => {
-        var dom = document.getElementsByClassName('ant-table-small')[0]
-        dom.style.border = 'none'
-      }, 200)
-    })
+    // setTimeout(() => {
+    //   setTimeout(() => {
+    //     var dom = document.getElementsByClassName('ant-table-small')[0]
+    //     dom.style.border = 'none'
+    //   }, 200)
+    // })
   },
   methods: {
     // 点击   ‘点击查看下载情况’ 触发
@@ -621,12 +635,12 @@ export default {
           // pick(this.model, 'departmentId', 'activeNode','materialType', 'materialName', 'materialDescription', 'downloadLink')
         )
       })
-    }, 
+    },
     warnMethod(){
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
     },
     // 点击新增 或者编辑弹窗中的保存按钮触发
@@ -635,12 +649,15 @@ export default {
       this.form.validateFields((err, values) => {
         console.log('err123:',err)
           if (!err) {
+			this.disabled=true;
+			console.log(this.disabled)
             this.confirmLoading = true
-            let formData = Object.assign(this.model, values)
+            let formData = Object.assign(this.model, values)			
             formData.departmentId = this.dept
             let obj = this.model.id ? updateMaterial(formData) : addMaterial(formData)
             obj.then(res => {
               if (res.code === 200) {
+				  this.disabled=false;
                  if(this.model.id){
                   this.message = "修改成功"
                   }else{
@@ -692,6 +709,7 @@ export default {
     getDepartmentData() {
       departmentAll({ dataType: 'materialDepartment' }).then(res => {
         if (res.code === 200) {
+          console.log('dddddd',res.data)
           this.departmentData = res.data
           this.dept = res.data[0]['id']
           this.queryParam.department = res.data[0]['id']
@@ -769,4 +787,16 @@ export default {
 .ant-form-item {
   margin-bottom: 16px;
 }
+.buttonGray{
+		background: rgb(245,245,245);
+		color: #55565D;;
+		width: 112px;
+		height: 34px;
+	}
+.buttonBlue{
+		background: #3264D5;
+		color: white;
+		width: 112px;
+		height: 34px;
+	}
 </style>

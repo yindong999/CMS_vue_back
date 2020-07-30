@@ -14,7 +14,7 @@
      <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="handleOk" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="handleOk" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="handleCancel" class="abolishBtn">取消</a-button>
@@ -22,44 +22,31 @@
 				</div>
 			</template>
     <a-spin :spinning="confirmLoading">
-      <a-row class="lin30" :gutter="16">
-        <a-col :span="4" class="textRight">内容发布渠道</a-col>
-        <a-col :span="20">
+      <a-form :form="form">
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="内容账号" >
           <a-select
             style="width: 400px"
             :showSearch="true"
             :filter-option="filterOption"
             allowClear
-            v-model="selectChannel.code"
             @change="changeChannel"
+            v-decorator="['channelId', validatorRules.channelId]"
           >
-            <!--<a-select-opt-group>-->
-            <!--<span slot="label"><a-icon type="wechat" />微信</span>-->
-            <!--<a-select-option v-for="(item,key) in wechatData" :value="item.id" :key="key">{{item.channelName}}</a-select-option>-->
-            <!--</a-select-opt-group>-->
-            <!--<a-select-opt-group >-->
-            <!--<span slot="label"><a-icon type="weibo" />微博</span>-->
-            <!--<a-select-option v-for="(item,key1) in weiboData" :value="item.id" :key="key1">{{item.channelName}}</a-select-option>-->
-            <!--</a-select-opt-group>-->
             <a-select-option
               v-for="(item,key) in allData"
               :value="item.id"
               :key="key"
             >{{item.channelName}}</a-select-option>
           </a-select>
-        </a-col>
-      </a-row>
-      <a-row class="lin30" :gutter="16">
-        <a-col :span="4" class="textRight">内容编辑者</a-col>
-        <a-col :span="20">
+        </a-form-item>
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="内容编辑者">
           <a-select
-            :showSearch="true"
-            v-model="selectEditor"
-            mode="multiple"
-            :showArrow="true"
-            allowClear
             style="width: 400px"
-            @change="changeEditor"
+            :showSearch="true"
+            :filter-option="filterOption"
+            allowClear
+            mode="multiple"
+            v-decorator="['editorId', validatorRules.editorId]"
           >
             <a-select-option
               v-for="(item,key) in editorData"
@@ -67,32 +54,32 @@
               :key="key"
             >{{item.userName}}</a-select-option>
           </a-select>
-        </a-col>
-      </a-row>
-      <a-row class="lin30" :gutter="16">
-        <a-col :span="4" class="textRight">内容审核者</a-col>
-        <a-col :span="20">
-          <span v-for="(item,index) in auditorArray" :key="index" style="display:inline-block;margin-bottom: 10px">
-            <a-icon type="swap-right" class="iconSwap" v-show="item.icon" />
-            <a-select style="width: 150px" :showSearch="true" v-model="item.id">
-              <a-select-option
-                v-for="(value,key1) in auditorData"
-                :value="value.userId"
-                :key="key1"
-              >{{value.userName}}</a-select-option>
-            </a-select>
-          </span>
-          <a-button class="marginRight10" @click="deleteNum">删除</a-button>
-          <a-button class @click="addNum" type="primary">添加</a-button>
-        </a-col>
-      </a-row>
+        </a-form-item>
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="内容审核者">
+          <a-select
+            style="width: 400px"
+            :showSearch="true"
+            :filter-option="filterOption"
+            allowClear
+            mode="multiple"
+            v-decorator="['reviewerid', validatorRules.reviewerid]"
+          >
+            <a-select-option
+              v-for="(item,key) in auditorData"
+              :value="item.userId"
+              :key="key"
+            >{{item.userName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
     </a-spin>
      <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </a-modal>
 </template>
 
 <script>
+import pick from 'lodash.pick'
 import tooltip from "@/components/tooltip/tooltip.vue"
 import { thirdPublishChannelList, getEditorList, saveProcessConfig, updateProcessConfig } from '@/api/api'
 // import moment from "moment"
@@ -127,29 +114,30 @@ export default {
       //微信渠道
       wechatData: [],
       //编辑者数据
-      editorData: ['11', '22'],
+      editorData: [],
       //审核者数据
       auditorData: [],
-      //审核者下拉框数组
-      auditorArray: [{ id: '', icon: false }],
-      //审核者数量
-      // auditorNum:1
-      //选中的发布渠道
-      selectChannel: {
-        code: '',
-        name: ''
+      form: this.$form.createForm(this),
+      validatorRules: {
+        channelId: {
+          rules: [
+            { required: true, message: '请选择内容账号!' }
+          ]
+        },
+        editorId: {
+          rules: [
+            { required: true, message: '请选择编辑者!' }
+          ]
+        },
+        reviewerid: {
+          rules: [
+            { required: true, message: '请选择审核者!' }
+          ]
+        },
       },
-      //选中的编辑者
-      selectEditor1:'',
-      // selectEditor1: {
-      //   code: '',
-      //   name: ''
-      // }
-      selectEditor:[]
+      //操作按钮禁用
+      btnDisabled:false
     }
-  },
-  created() {
-    this.id = ''
   },
   mounted() {},
   methods: {
@@ -157,44 +145,12 @@ export default {
         this.$refs.tooltip.visible = true
         this.$refs.tooltip.alertVisible = true
         setTimeout(()=>{
-          this.$refs.tooltip.cancel() 
+          this.$refs.tooltip.cancel()
         },3000)
       },
     //重置
     reset() {
-      this.selectChannel = {
-        code: '',
-        name: ''
-      }
-      this.selectEditor =  []
-      // this.selectEditor = {
-      //   code: '',
-      //   name: ''
-      // }
-      this.auditorArray = [{ id: '', icon: false }]
-    },
-    //渠道变化
-    changeChannel(val) {
-      //获取渠道名称
-      let opt = {}
-      opt = this.allData.find(item => {
-        return item.id === val
-      })
-      this.selectChannel['name'] = opt['channelName']
-      //联动获取编辑和审核用户
-      this.getUser(val)
-    },
-    //编辑者变化
-    changeEditor(val) {
-      console.log("val:",val )
-      this.selectEditor1 = val.join(',')
-      //  console.log("selectEditor:", this.selectEditor )
-      //获取编辑者名称
-      // let opt = {}
-      // opt = this.editorData.find(item => {
-      //   return item.userId === val
-      // })
-      // this.selectEditor['name'] = opt['userName']
+
     },
     //获取内容编辑者和审核者
     getUser(value) {
@@ -253,56 +209,39 @@ export default {
         }
       })
     },
-    //删除一个审核者
-    deleteNum() {
-      if (this.auditorArray.length >= 2) {
-        this.$delete(this.auditorArray, this.auditorArray.length - 1)
-      }
+    //渠道变化
+    changeChannel(val) {
+      //联动获取编辑和审核用户
+      this.getUser(val)
     },
-    //添加一个审核者
-    addNum() {
-      if (this.auditorArray.length >= 1) {
-        this.auditorArray.push({ id: '', name: '', icon: true })
-      }
-    },
-
     create() {
-      this.visible = true
-      this.id = ''
-      this.getChannel()
+      this.edit({});
     },
     edit(record) {
-      console.log("record:",record)
+      // 设置模态框的标题
+      this.titles = JSON.stringify(record) === '{}' ? '新增' : '编辑'
+
+      this.form.resetFields()
+      this.model = Object.assign({}, record)
       this.visible = true
-      this.title = '编辑'
+      //编辑者
+      if(this.model && this.model.editorId ){
+        this.model.editorId=this.model.editorId.split(',')
+      }
+      //审核者
+      if(this.model && this.model.reviewerid ){
+        this.model.reviewerid=this.model.reviewerid.split(',')
+      }
+      if(this.model && this.model.configId){
+        console.log(this.model)
+        this.getUser(this.model.channelId)
+      }
       this.getChannel()
-      this.getUser(record.channelId)
-      this.id = record.configId
-      // setTimeout(() => {
-        this.selectChannel['name'] = record.channelName
-        this.selectChannel['code'] = record.channelId
-        // this.selectEditor['name'] = record.editorname
-        this.selectEditor = record.editorId.split(',')
-        // this.selectEditor1.name = record.editorname.split(',')
-
-        let reviewerCodeArray = record.reviewerid.split(',')
-        if (reviewerCodeArray.length > 0) {
-          this.auditorArray = []
-        }
-        reviewerCodeArray.forEach((value, index) => {
-          var opt = {}
-          opt['id'] = value
-          opt['icon'] = index===0?false:true
-          // if (index === 0) {
-          //   opt['icon'] = false
-          // } else {
-          //   opt['icon'] = true
-          // }
-          this.auditorArray.push(opt)
-        })
-            console.log("  this.auditorArray:",  this.auditorArray)
-      // }, 500)
-
+      this.$nextTick(() => {
+        this.form.setFieldsValue(
+          pick(this.model, 'channelId', 'editorId', 'reviewerid')
+        )
+      })
     },
     close() {
       this.$emit('close')
@@ -310,80 +249,49 @@ export default {
       this.reset()
     },
     handleOk() {
-      const that = this
-
-      //获取审核者名称,将审核者名称和code分别拼接成字符串
-      // let auditorNameArray=[]
-      let auditorCodeArray = []
-      // let auditorNameStr = ''
-      let auditorCodeStr = ''
-      this.auditorArray.forEach(item => {
-        //没选择数据的审核者下拉框去掉
-        if (item.id !== '') {
-          auditorCodeArray.push(item.id)
-          // let opt = this.auditorData.find(value=>{
-          //   return value.id === item.id
-          // })
-          // auditorNameArray.push(opt.userName)
+      // 触发表单验证
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          this.btnDisabled = true
+          this.confirmLoading = true
+          let formData = Object.assign(this.model, values)
+          // let param = { ...formData }
+          let params = {
+            channelId: formData.channelId,
+            editorId: formData.editorId.join(),
+            reviewerId: formData.reviewerid.join()
+          }
+          if(this.model.configId){
+            params['configId'] = formData.configId
+          }
+          console.log(params);
+          let obj = !this.model.configId ? saveProcessConfig(params) : updateProcessConfig(params)
+          obj
+            .then(res => {
+              if (res.code === 200) {
+                if(this.model.id){
+                  this.message = "修改成功"
+                }else{
+                  this.message = "新增成功"
+                }
+                this.type = "info"
+                this.warnMethod();
+                this.$emit('ok')
+                this.userType = 1
+                this.visible = false
+              } else if(res.code!==400){
+                this.message = res.message
+                this.type = "error"
+                this.warnMethod();
+              }
+            })
+            .finally(() => {
+              this.confirmLoading = false
+              this.btnDisabled = false
+              this.$emit('close')
+            })
         }
       })
-
-      // auditorNameStr = auditorNameArray.join()
-      auditorCodeStr = auditorCodeArray.join()
-      this.selectEditor1 = this.selectEditor.join()
-      if (!this.selectChannel.code || !this.selectEditor1 || auditorCodeArray.length === 0) {
-        // that.$message.warning('请正确填写信息')
-        this.message = "请正确填写信息"
-        this.type = "error"
-        this.warnMethod();
-        return
-      }
-      let obj
-      let param = {
-        channelId: this.selectChannel.code,
-        // channelName: this.selectChannel.name,
-        editorId: this.selectEditor1,
-        // editorName: this.selectEditor.name,
-        reviewerId: auditorCodeStr
-        // reviewerName: auditorNameStr,
-        // updateTime: moment(new Date())
-      }
-     console.log("选择渠道：",this.selectChannel.code)
-      console.log('编辑者：',this.selectEditor)
-      console.log("reviewerId:",auditorCodeStr)
-          // return
-      if (this.id !== '') {
-        param['configId'] = this.id
-        obj = updateProcessConfig(param)
-      } else {
-        obj = saveProcessConfig(param)
-      }
-         that.confirmLoading = true
-      obj
-        .then(res => {
-          if (res.code === 200) {
-            // that.$message.success(res.message)
-            if(this.id){
-                this.message = "修改成功"
-              }else{
-                this.message = "新增成功"
-              }
-              this.type = "info"
-              this.warnMethod();
-
-            this.selectEditor = []
-            that.$emit('ok')
-          } else if(res.code!==400){
-            // that.$message.error(res.message) 
-              this.message = res.message 
-              this.type = "error"
-              this.warnMethod();
-          }
-        })
-        .finally(() => {
-          that.confirmLoading = false
-          that.close()
-        })
     },
     handleCancel() {
       this.close()

@@ -6,56 +6,84 @@
     <!-- 查询条件 -->
     <div :class="[flag?'block':'none']">
       <a-card title="" :bordered="false" style="width: 100%;margin-bottom:12px;">
-        <a-row :gutter="24" style="display:flex;align-items:center;">
-          <a-col>媒体平台</a-col>
-          <a-col :md="4" :sm="6">
-            <!-- 媒体平台 -->
-                <a-select
-                placeholder="请选择媒体平台" allowClear
-                @change="mediaPlatformChange"
-                  style="width:100%"
+         <a-form layout="inline" @keyup.enter.native="queryThirdList">
+          <a-row class="formStyle" style="width:100%;">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+            <span class="textWidth4">媒体平台</span>
+            <a-select
+                  placeholder="请选择媒体平台" allowClear
+                  @change="mediaPlatformChange"
+                    style="width:calc(100% - 97px);margin-left: 16px;"
+                  :showSearch="true" :filter-option="filterOption"
+                >
+                  <a-select-option value="">全部</a-select-option>
+                  <a-select-option
+                    :value="key"
+                    v-for="(value, key, index) in mediaPlate"
+                    :key="index"
+                  >{{value}}</a-select-option>
+                </a-select>
+              </a-col>
+              <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">渠道名称</span>
+                  <a-input
+                  allowClear
+                  placeholder="请填写渠道名称"
+                  v-model="queryParam.channelName"
+                  @change="channelNameChange"
+                    style="width:calc(100% - 97px);margin-left: 16px;"
+                />
+              </a-col>
+              <a-col style="display:flex;align-items:center;" :span="8">
+                  <span class="textWidth4">渠道类别</span>
+                    <a-select
+                placeholder="请选择渠道类别" allowClear
+                @change="channelLevelChange"
+                style="width:calc(100% - 97px);margin-left: 16px;"
+                :showSearch="true" :filter-option="filterOption"
               >
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option
                   :value="key"
-                  v-for="(value, key, index) in mediaPlate"
+                  v-for="(value, key, index) in channelLevel"
                   :key="index"
                 >{{value}}</a-select-option>
               </a-select>
-            </a-col>
-            <!-- 渠道名称 -->
-            <a-col>渠道名称</a-col>
-            <a-col :md="4" :sm="6">
-                <a-input
-                allowClear
-                placeholder="请填写渠道名称"
-                v-model="queryParam.channelName"
-                @change="channelNameChange"
-                  style="width:100%"
-              />
-            </a-col>
-                <!-- 渠道类别 -->
-                <a-col>渠道类别</a-col>
-                <a-col :md="4" :sm="6">
-                  <a-select
-              placeholder="请选择渠道类别" allowClear
-              @change="channelLevelChange"
-              style="width:100%"
-            >
-               <a-select-option value="">全部</a-select-option>
-              <a-select-option
-                :value="key"
-                v-for="(value, key, index) in channelLevel"
-                :key="index"
-              >{{value}}</a-select-option>
-            </a-select>
-                </a-col>
-            <a-col class="col" style="position:absolute;right:0;">
-						   <a-button @click="queryThirdList" type="primary" class="queryBtn">
-							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
-							查询</a-button>
-					  </a-col>
-        </a-row>
+			  	</a-col>
+			  	</a-row>
+              <div class="btnCol"  style="width:170px;"> 
+                <a-button @click="queryThirdList" type="primary" class="queryBtn">
+                  <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+                  <span>查询</span>
+                </a-button>
+              </div> 
+          </a-row>
+          <a-row v-if="isSpread" class="leftDiv" style="display:flex;align-items:center;margin-top:16px;">
+						 <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">渠道状态</span>
+							<a-select
+                placeholder="请选择渠道状态" 
+                @change="changeUp"
+                style="width:calc(100% - 97px);margin-left: 16px;"
+                :showSearch="true" :filter-option="filterOption"
+              >
+                <a-select-option
+                  :value="key"
+                  v-for="(value, key, index) in StandUpAndDown"
+                  :key="index"
+                >{{value.status}}</a-select-option>
+              </a-select>
+						</a-col>
+          </a-row> 
+          <!-- 展开/收起按钮 -->
+          <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':!isSpread?'16px':'0'}">
+            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+              <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+              <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
+            </span>
+          </div> 
+         </a-form>
         <!-- <a-row style="margin-top: 8px;" type="flex" justify="end">
                 <a-button
                   type="primary"
@@ -66,16 +94,17 @@
         </a-row> -->
       </a-card>
     </div>
-    <!-- 第三方发布渠道 -->
+    <!-- 第三方账号 -->
     <div :class="['self',flag?'block':'none']">
-      <a-card title="发布渠道" :headStyle="headStyle" :bodyStyle="bodyStyle" :bordered="false" style="width: 100%;">
-        <a-button icon="plus" slot="extra" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" type="primary" @click="add">新增</a-button>
+      <a-card title="账号" :headStyle="headStyle" :bodyStyle="bodyStyle" :bordered="false" style="width: 100%;">
+        <a-button icon="plus" style="padding:0 16px;position: absolute;right: 32px;" slot="extra"
+         v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" type="primary" @click="add">新增</a-button>
         <div>
           <a-table
             style="height:500px"
             ref="table"
             size="small"
-            :bordered="false"
+            :bordered="bordered"
             rowKey="id"
             :columns="columns"
             :dataSource="dataSource"
@@ -99,9 +128,10 @@
                <span v-for="(item,index) in record.editDepartmentGroup" :key="index">{{item.departmentName}}<br></span>
             </span>
             <span slot="action" slot-scope="text, record">
-              <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" @click="getThirdPublishChannelOne(record)" style="color:#3264D5;margin-right:14px;">编辑</a>
+			        <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" @click="changeDown(record)" style="color:#3264D5;margin-right:10px;">{{record.isChannelOn===false?'上架':'下架'}}</a>
+              <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn&&record.isChannelOn==true" @click="getThirdPublishChannelOne(record)" style="color:#3264D5;margin-right:10px;">编辑</a>
               <!-- <a-divider v-if="authButton.hasOwnProperty('deleteBtn')&&authButton.deleteBtn" type="vertical" /> -->
-              <a-popconfirm v-if="authButton.hasOwnProperty('deleteBtn')&&authButton.deleteBtn" title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-popconfirm v-if="authButton.hasOwnProperty('deleteBtn')&&authButton.deleteBtn&&record.isChannelOn==true" title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                 <a style="color:#3264D5">删除</a>
               </a-popconfirm>
             </span>
@@ -109,7 +139,7 @@
         </div>
       </a-card>
     </div>
-    <!-- 第三方发布渠道新增弹窗 -->
+    <!-- 第三方账号新增弹窗 -->
 
     <a-modal
       style="top: 10px;"
@@ -123,7 +153,7 @@
      <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="saves" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="saves" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="cancle" class="abolishBtn">取消</a-button>
@@ -151,6 +181,7 @@
                   v-model="addBasicMsg.channelPlatform"
                   style="width: 23%;"
                   @change="addMediaPlatform"
+                  :showSearch="true" :filter-option="filterOption" allowClear
                 >
                   <a-select-option
                     :value="key"
@@ -165,6 +196,7 @@
                   v-model="ownerDepartmentGroup"
                   style="width: 23%;"
                   @change="addOperationDepartment"
+                  :showSearch="true" :filter-option="filterOption" allowClear
                 >
                   <a-select-option
                     :value="item.id"
@@ -206,6 +238,7 @@
                   v-model="addBasicMsg.channelLevel"
                   style="width: 23%;"
                   @change="addChannelLevel"
+                  :showSearch="true" :filter-option="filterOption" allowClear
                 >
                   <a-select-option
                     :value="key"
@@ -232,7 +265,7 @@
                   v-model="addBasicMsg.brand"
                   style="width: 23%;"
                   @change="addBrand"
-                  allowClear
+                  :showSearch="true" :filter-option="filterOption" allowClear
                 >
                   <a-select-option
                     :value="key"
@@ -247,7 +280,7 @@
                   v-model="addBasicMsg.industry"
                   style="width:23%;"
                   @change="addIndustry"
-                  allowClear
+                  :showSearch="true" :filter-option="filterOption" allowClear
                 >
                   <a-select-option
                     :value="key"
@@ -264,6 +297,7 @@
                   placeholder="请选择编辑部门"
                   v-model="editDepartmentGroup" :showArrow="true"
                   style="width: 23%;" allowClear mode="multiple"
+                  :showSearch="true" :filter-option="filterOption"
                 >
                   <a-select-option
                     placeholder="请选择编辑部门"
@@ -286,6 +320,7 @@
                     v-model="addBasicMsg.wechatType"
                     style="width: 23%;"
                     @change="addWechatType"
+                    :showSearch="true" :filter-option="filterOption" allowClear
                   >
                     <a-select-option value="订阅号">订阅号</a-select-option>
                     <a-select-option value="服务号">服务号</a-select-option>
@@ -380,7 +415,7 @@
         </div>
       <!-- </a-spin> -->
     </a-modal>
-    <!-- 第三方发布渠道编辑弹窗 -->
+    <!-- 第三方账号编辑弹窗 -->
     <a-modal
       style="top: 10px;"
       width="800px"
@@ -393,7 +428,7 @@
      <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">
 				<a-config-provider :auto-insert-space-in-button="false">
-					<a-button type="primary"  @click="update" class="affirmBtn">确认</a-button>
+					<a-button type="primary"  @click="update" class="affirmBtn" :disabled="btnDisabled">确认</a-button>
 				</a-config-provider>
 				<a-config-provider :auto-insert-space-in-button="false">
 					<a-button @click="cancle2" class="abolishBtn">取消</a-button>
@@ -615,7 +650,7 @@
                     <!-- key和value两个输入框 -->
                     <a-input
                       style="width:33%;"
-                      :id="i" placeholder="请输入秘钥名称" 
+                      :id="i" placeholder="请输入秘钥名称"
                       v-model="accountList[i]['key']"
                       @change="keyInput2"
                     />
@@ -667,7 +702,7 @@
        <img :src="preImgUrl" alt="" style="width:100%">
     </a-modal>
     <!-- 信息提示框 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
  <script>
@@ -680,7 +715,9 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import tooltip from "@/components/tooltip/tooltip.vue"
 // 导入接口
 import {
+  changeDownToUp,
   departmentList,
+  changeUpToDown,
   thirdPublishChannelList,
   thirdPublishChannelOne,
   dataDictionary,
@@ -694,6 +731,8 @@ export default {
   components:{ tooltip },
   data() {
     return {
+      isSpread:false,
+      bordered:false,
       message:'操作成功',
       type:'info',
       showWhichImg:false,
@@ -725,7 +764,6 @@ export default {
       },
       headers: {},
       channelId: [], // 上传照片需要的参数
-      visible: false,
       visible2: false,
       firstKey: '',
       firstVal: '',
@@ -753,6 +791,9 @@ export default {
       start: 0,
       accountList: [],
       accountList2: [],
+	  StandUpAndDown:[
+		  {status:'上架'},{status:'下架'}
+	  ],
       accountStr: '', // 输入的所有账号组成的键值对字符串
       flag: true, // 控制新增款快是否显示的标志
       // 表头
@@ -764,7 +805,7 @@ export default {
           className:'table_title'
         },
         {
-          title: '渠道名称',width: 200,
+          title: '渠道名称',width: 120,
           align: 'center',
           dataIndex: 'channelName',
           className:'table_title'
@@ -789,42 +830,42 @@ export default {
         },
         {
           title: '管理部门',
-          dataIndex: 'ownerDepartmentGroup',width: 150,
+          dataIndex: 'ownerDepartmentGroup',width: 130,
           align: 'center',
            scopedSlots: { customRender: 'ownerDepartmentGroup' },
            className:'table_title'
         },
         {
           title: '编辑部门',
-          dataIndex: 'editDepartmentGroup',width: 150,
+          dataIndex: 'editDepartmentGroup',width: 130,
           align: 'center',
           scopedSlots: { customRender: 'editDepartmentGroup' },
           className:'table_title'
         },
         {
           title: '联系人',
-          dataIndex: 'contacter',width: 80,
+          dataIndex: 'contacter',width: 70,
           align: 'center',
           className:'table_title'
         },
         {
           title: '联系方式',
           dataIndex: 'contacterMobile',
-          width: 120,
+          width: 110,
           align: 'center',
           className:'table_title'
         },
         {
           title: '创建时间',
           dataIndex: 'createDate',
-          width: 150,
+          width: 100,
           align: 'center',
           className:'table_title'
         },
         {
           title: '头像',
           dataIndex: 'imgUrl',
-          align: 'center',width: 80,
+          align: 'center',width: 70,
           scopedSlots: { customRender: 'action2' },
           className:'table_title'
         },
@@ -833,7 +874,7 @@ export default {
           dataIndex: 'action',
           align: 'center',
           // fixed:'right',
-          width: 100,
+          width: 150,
           scopedSlots: { customRender: 'action' },
           className:'table_title'
         }
@@ -848,14 +889,16 @@ export default {
         delete: '/cms/channel/info/delete'
       },
       preImgUrl:'',
-      visibleImg:false
+      visibleImg:false,
+      //操作按钮禁用
+      btnDisabled:false
     }
   },
   created() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     const id = Vue.ls.get(USER_INFO).id
     this.headers = { authorization: token, uuss: id }
-    // 获取第三方发布渠道的数据列表
+    // 获取第三方账号的数据列表
     // this.getTPCList()
     // 获取运营部门数据
     this.getOperationDepartment()
@@ -875,10 +918,10 @@ export default {
     if(auth.hasOwnProperty(this.$route.name)){
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    // setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
   },
   watch:{
     contacterMobile(newTel, oldTel){
@@ -960,9 +1003,57 @@ export default {
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
     },
+	//上下架搜索
+	changeUp(value){
+		console.log(value,'value')
+		if(value==0){
+			this.queryParam['channelOn'] = true;
+		}
+		if(value==1){
+			this.queryParam['channelOn'] = false;
+		}
+	},
+	//上下架改变
+	changeDown(record){
+		let params={
+			"channelName": record.channelName,
+			"channelPlatformCode":record.channelPlatformCode ,
+			"id": record.id
+		}
+		console.log(params)
+		if(record.isChannelOn==false){//下架变上架
+			changeDownToUp(params).then(res=>{
+				if(res.code===200){
+					this.message =  res.message
+					this.type = 'success'
+					this.warnMethod()
+					this.searchQuery();
+				}else{
+					this.message =  res.message
+					this.type = 'error'
+					this.warnMethod()
+				}
+			})
+		}else{
+			changeUpToDown(params).then(res=>{
+				if(res.code===200){
+					this.message =  res.message
+					this.type = 'success'
+					this.warnMethod()
+					 this.searchQuery();
+				}else{
+					this.message =  res.message
+					this.type = 'error'
+					this.warnMethod()
+				}
+			})
+		}
+
+
+	},
     // 获取管理部门数据
     getOperationDepartment() {
       departmentList({ page: 1, size: 10000 }).then(res => {
@@ -1041,6 +1132,7 @@ export default {
         })
       }
       // 管理部门
+			// console.log(ids.ownerDepartmentGroup,"123321312")
       this.ownerDepartmentGroup = ids.ownerDepartmentGroup[0]['departmentId']
       // end1
     // 后台改完后，start1-end1 去掉注释；start2-end2加上注释
@@ -1317,11 +1409,11 @@ export default {
       // var reg02 = /^(0[0-9]{2,3}\-)([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/;
       var pass = true
       if (!this.addBasicMsg['channelPlatform']) {
-        pass = false 
+        pass = false
         this.message = '请选择媒体平台'
         this.type = 'error'
         this.warnMethod()
-      } else if(this.ownerDepartmentGroup.length==0){ 
+      } else if(this.ownerDepartmentGroup.length==0){
         this.message = '请选择管理部门'
         this.type = 'error'
         this.warnMethod()
@@ -1330,8 +1422,8 @@ export default {
         this.message = '请填写渠道名称'
         this.type = 'error'
         this.warnMethod()
-        pass = false 
-      } else if (!this.addBasicMsg['channelLevel']) { 
+        pass = false
+      } else if (!this.addBasicMsg['channelLevel']) {
         this.message = '请选择渠道类别'
         this.type = 'error'
         this.warnMethod()
@@ -1346,12 +1438,12 @@ export default {
         this.type = 'error'
         this.warnMethod()
         pass = false
-      }else if(this.editDepartmentGroup.length==0){ 
+      }else if(this.editDepartmentGroup.length==0){
         this.message = '请选择编辑部门'
         this.type = 'error'
         this.warnMethod()
         pass = false
-      }else if(!this.imgSrc){ 
+      }else if(!this.imgSrc){
         this.message = '请上传头像'
         this.type = 'error'
         this.warnMethod()
@@ -1390,6 +1482,7 @@ export default {
     // 编辑某一条数据时触发
     update() {
       if (this.validate()) {
+        this.btnDisabled = true
         // return
         // 重组需要传给后台的编辑部门的相关数据
         this.editDepartmentData()
@@ -1404,6 +1497,7 @@ export default {
         this.addBasicMsg['accountParms'] = JSON.stringify(obj) === '{}'?'':JSON.stringify(obj)
         this.addBasicMsg['channelType'] = '2'
         thirdPublishChannelUpdateOne(this.addBasicMsg).then(res => {
+          this.btnDisabled = false
           if (res.code === 200) {
             this.editDepartmentGroup = []
             this.ownerDepartmentGroup = []
@@ -1429,6 +1523,7 @@ export default {
     // 新增一条数据时触发
     saves() {
       if (this.validate()) {
+        this.btnDisabled = true
         this.ownerDepartmentData()
         this.editDepartmentData()
         this.addBasicMsg['contacterMobile'] = this.contacterMobile
@@ -1444,11 +1539,13 @@ export default {
   console.log('this.addBasicMsg',this.addBasicMsg)
   // return
         thirdPublishChannelAddOne(this.addBasicMsg).then(res => {
+          this.btnDisabled = false
           if (res.code === 200) {
             JSON.stringify(this.addBasicMsg)
             this.addBasicMsg = {}
             this.firstKey = ''
             this.firstVal = ''
+            this.contacterMobile = ''
             this.visible = false
             this.accountList = []
             this.ele = []
@@ -1583,5 +1680,8 @@ export default {
 }
 .ant-upload{
   padding:0!important;
+}
+.left{
+ width:calc(100% - 170px);display:flex;
 }
 </style>

@@ -29,7 +29,8 @@
       :zIndex="1200"
     >
       <!-- message: 要显示的文字信息，type：提示框类型，success：成功；info：信息；warning：警告；error：错误 -->
-      <a-alert style="width:320px;" v-if="alertVisible" :message="message" :type="type" show-icon :closable="true" @close="cancel" />
+      <a-alert style="width:320px;padding-right: 26px;" v-if="alertVisible" :message="message" :type="type" show-icon :closable="false" />
+      <a-icon type="close" style="position:absolute;right:16px;top:13px;" @click="cancel"/>
     </a-modal>
   </div>
 </template>

@@ -29,7 +29,7 @@ const mixinDevice = {
   },
   methods: {
     isMobile () {
-      return this.device === 'mobile'
+      return this.device === 'desktop'
     },
     isDesktop () {
       return this.device === 'desktop'

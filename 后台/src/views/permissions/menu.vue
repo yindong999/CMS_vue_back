@@ -4,11 +4,12 @@
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row :gutter="24" style="display:flex;align-items:center;">
-            <a-col>登录类型</a-col>
-            <a-col :md="4" :sm="6">
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+                <span class="textWidth4">登录类型</span>
                 <a-select
+                  style="width:calc(100% - 97px);margin-left: 16px;"
                   :showSearch="true" 
                   placeholder="请选择登录类型"
                   @change="selectLogin" allowClear
@@ -18,9 +19,10 @@
                   <a-select-option :value="2">后台</a-select-option>
                 </a-select>
             </a-col>
-            <a-col>菜单类型</a-col>
-            <a-col :md="4" :sm="6">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">菜单类型</span>
                 <a-select
+                  style="width:calc(100% - 97px);margin-left: 16px;"
                   :showSearch="true" 
                   placeholder="请选择菜单类型"
                   @change="selectMenu" allowClear
@@ -31,12 +33,12 @@
                   <a-select-option :value="2">按钮</a-select-option>
                 </a-select>
             </a-col>
-            <a-col class="col" style="position:absolute;right:0;">
+          </a-row>
+            <div class="btnCol"  style="width:170px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					  </a-col>
-          </a-row>
+					  </div>
           <!-- <a-row style="margin-top:8px;" type="flex" justify="end">
             <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
           </a-row> -->
@@ -45,14 +47,14 @@
     </a-card>
     <a-card :bordered="false" :hoverable="true" title="菜单列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
       <!-- 操作按钮区域 -->
-      <a-button slot="extra" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus" style="position: absolute;top: 12px;right:32px;">新增</a-button>
+      <a-button slot="extra" style="padding:0 16px;position:absolute;right:32px;" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <div>
         <a-table
           style="height:500px"
           :scroll="{ x: 2000}"
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
@@ -88,6 +90,7 @@
     components: { MenuModal },
     data () {
       return {
+        bordered:false,
         headStyle:{
         "text-align":"center",
         "border-bottom":"none" 
@@ -267,10 +270,10 @@
       if(auth.hasOwnProperty(this.$route.name)){
         this.authButton = auth[this.$route.name]
       }
-      setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    //   setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
     },
     methods: {
       selectLogin(e){

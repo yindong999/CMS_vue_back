@@ -2,39 +2,66 @@
   <div>
     <!-- 顶部查询条件模块 -->
     <div style="background:#ECECEC; margin-bottom:12px">
+      <!-- <a-card title="" :bordered="false" style="width: 100%;" :bodyStyle="{'display':'flex','justify-content':'space-between'}"> -->
       <a-card title="" :bordered="false" style="width: 100%;">
-        <a-row :gutter="24" style="display:flex;align-items:center;">
-            <!-- 审核状态 -->
-            <a-col>内容标题</a-col>
-            <a-col :md="4" :sm="6">
-              <a-input defaultValue style="width:100%" @keydown="enter" v-model="ContTile" placeholder="请输入内容标题"></a-input>
+         <a-row class="formStyle">
+		<a-row class="leftDiv">
+            <!-- 媒体平台 -->
+            <a-col style="display:flex;align-items:center;" :span="8">
+			  <span class="textWidth4">媒体平台</span>
+			    <a-select  style="width:calc(100% - 97px);margin-left:16px;" allowClear @change="mediaPlatformChange"
+					placeholder="请选择媒体平台" :showSearch="true" :filter-option="filterOption">
+              		<a-select-option value>全部</a-select-option>
+             		<a-select-option :value="item.mediaPlatformCode" v-for="(item, index) in mediaPlate" :key="index">{{item.mediaPlatformName}}</a-select-option>
+            	</a-select>
             </a-col>
-            <!-- 发布渠道 -->
-            <a-col>发布渠道</a-col>
-             <a-col :md="4" :sm="6">
-              <a-select  style="width:100%" @change="channelChange"  placeholder="请选择发布渠道">
-              <a-select-option value>
-               全部
-              </a-select-option>
-              <a-select-option :value="item.id" v-for="(item,index) in channel" :key="index">{{item.channelName}}</a-select-option>
+            <!-- 账号 -->
+             <a-col style="display:flex;align-items:center;" :span="8">
+			  <span class="textWidth2">账号</span>
+			  <!-- v-model="channelChangeC"  -->
+              <a-select  style="width:calc(100% - 97px);margin-left:16px;" allowClear @change="channelChange"
+			  	 v-model="channelChangeC" placeholder="请选择发布渠道" :showSearch="true" :filter-option="filterOption">
+              		<a-select-option value>全部</a-select-option>
+              		<a-select-option :value="item.id" v-for="(item,index) in channel" :key="index">{{item.channelName}}</a-select-option>
             </a-select>
             </a-col>
             <!-- 发布平台 -->
-            <a-col>发布人部门</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select  style="width:100%" @change="mediaChange"   placeholder="请选择发布人部门">
+            <a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+			  <span class="textWidth4">发布部门</span>
+              <a-select  style="width:calc(100% - 97px);margin-left:16px;" @change="mediaChange" allowClear  placeholder="请选择发布人部门" :showSearch="true" :filter-option="filterOption">
               <a-select-option value>
                全部
               </a-select-option>
               <a-select-option  v-for="(item,index) in media" :key="index" :value="item.id">{{item.departmentName}}</a-select-option>
             </a-select>
             </a-col>
-			<a-col class="col" style="position:absolute;right:0;">
+        </a-row>
+			<div class="btnCol"  style="width:170px;">
 				<a-button @click="search" type="primary" class="queryBtn">
 					<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 					查询</a-button>
-			</a-col>
-        </a-row>
+			</div>
+			</a-row>
+			<a-row class="leftDiv" style="display:flex;align-items:center;margin-top:16px;" v-if="isSpread">
+              <a-col style="display:flex;align-items:center;padding-right:24px;" :span="8">
+				  <span class="textWidth4">内容标题</span>
+        	      <a-input defaultValue style="width:calc(100% - 73px);margin-left:16px;" allowClear  v-model="ContTile" placeholder="请输入内容标题"></a-input>
+              </a-col>
+			<a-col style="display:flex;align-items:center;" :span="8">
+			  <span class="textWidth2">状态</span>
+			    <a-select  style="width:calc(100% - 97px);margin-left:16px;"  defaultValue="4" @change="stateChange"
+					placeholder="请选择状态" :showSearch="true" :filter-option="filterOption">
+             		<a-select-option :value="item.value" v-for="(item,index) in ContentStatus" :key="index" v-show="item.value!='0'">{{item.label}}</a-select-option>
+            	</a-select>
+            </a-col>
+            </a-row>
+           <!-- 展开/收起按钮 -->
+          <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
+            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+              <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+              <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
+            </span>
+          </div>
         <!-- <a-row style="position: absolute;bottom:16px;right: 23px;">
              <a-button
               type="primary"
@@ -47,6 +74,13 @@
     </div>
     <!-- 页面中的表格 -->
     <a-card title="内容列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
+		<a-button
+		  slot="extra"
+		  type="primary"
+		  icon="download"
+		  style="padding:0 16px;position:absolute;right:32px;"
+		  @click="handleExportXls('内容统计明细表')"
+		>导出</a-button>
       <div style="background:#fff;">
         <a-table
           ref="table"
@@ -84,15 +118,22 @@
 		      >{{record.title}}</a>
 		    </a-popover>
 		  </span>
+		  <!-- 转发量 -->
+          <span
+            slot="wxIntPageReadCount"
+            slot-scope="text, record"
+          >{{record.publishStatus==='4'?record.wxIntPageReadCount:'/'}}</span>
           <span
             slot="shareCount"
             slot-scope="text, record"
-          >{{record.shareCount?record.shareCount:0}}</span>
+          >{{record.publishStatus==='4'?record.shareCount:'/'}}</span>
+		  <!-- 评论数 -->
           <span
             slot="commentCount"
             slot-scope="text, record"
-          >{{record.commentCount?record.commentCount:0}}</span>
-          <span slot="giveCount" slot-scope="text, record">{{record.giveCount?record.giveCount:0}}</span>
+          >{{record.publishStatus==='4'?record.commentCount:'/'}}</span>
+		  <!-- 点赞数 -->
+          <span slot="giveCount" slot-scope="text, record">{{record.publishStatus==='4'?record.giveCount:'/'}}</span>
           <span slot="action" slot-scope="text, record">
             <a
               v-if="authButton.hasOwnProperty('reviewBtn')&&authButton.reviewBtn" style="color:#3264D5;"
@@ -104,18 +145,20 @@
       </div>
     </a-card>
     <!-- 点击查看或者标题时显示的弹窗 -->
+
+
     <a-modal  class="list-view"  :zIndex="1200"
       v-if="listViewVisible"
      :footer="null"
      :visible="listViewVisible"
      @ok="listViewOk"
      @cancel="listViewCancel"
-     width="1200">
+     width="1200px">
     	<p class="contentBy" style="">内容详情</p>
     	<a-row :gutter="50" type="flex" style=" min-height:500px;margin-top:50px">
     		<!-- 内容预览模块 -->
     		<a-col  style="height:100%;">
-    			<a-row style="margin-left:5px;font-size:14px;font-weight:500;color:#3C3D43;">内容列表</a-row>
+    			<a-row style="margin-left:5px;font-size:14px;font-weight:500;color:#3C3D43;">内容预览</a-row>
     			<a-row class="box" style="margin-top: 24px;">
     				<a-col class="boxImg" @click="preview(contListI)" style="cursor:pointer;">
     					<div v-show="IMG" style="width: 100%;height: 100%;position: relative;" :style="{backgroundImage: 'url(' + (contListI.imagePath?contListI.imagePath:require('../../assets/placeholderB.png') )+ ')'}">
@@ -158,44 +201,53 @@
     				</a-col>
 					<a-col class="textRight">
 						<span class="textSpan">状态:</span>
-						<span class="textName">{{ContentStatus[statusOfGit].label}}</span>
+						<span class="textName">{{listViewDetails.showStatus}}</span>
 					</a-col>
-    				
+
     			</a-row>
     			<a-row class="basic">
     				<a-col class="textRight">
     					<span class="textSpan" style="margin-left: -2px">内容类型：</span>
-    					<span class="textName" style="margin-left: 14px;">{{listViewDetails.templateType==='news'?"图文":"媒体"|| "无"}}</span>
+    					<span class="textName" style="margin-left: 14px;">{{listViewDetails.templateType==='news'?"图文":"视频"|| "无"}}</span>
     				</a-col>
-    				
+    				<a-col class="textRight">
+						<span class="textSpan">账号:</span>
+						<span class="textName">{{listViewDetails.channelName}}</span>
+					</a-col>
     			</a-row>
 				<a-row class="basic">
-					<a-col class="textRight" style="padding-righ:16px;width: 670px;margin-right: 24px;margin-bottom: 16px;min-height: 26px;">
+						<!-- 标签部分目前先隐藏 2020-07-28 备注 -->
+					<!-- <a-col class="textRight" style="padding-righ:16px;width: 670px;margin-right: 24px;margin-bottom: 16px;min-height: 26px;">
 						<span class="textSpan" style="display: block;float: left;">标签:</span>
-						<p style="width: 610px;float: right;">
-						<span class="textName" 
-						style="margin-left: 14px;margin-bottom:8px;padding-left: 8px;width: auto;padding-right: 8px;background: #F4F6FA;" 
+						<p style="width: 605px;float: right;margin-left: 5px;">
+						<span class="textName"
+						style="margin-left: 14px;
+						border-radius:3px;
+						margin-bottom:8px;padding-left: 8px;width: auto;padding-right: 8px;background: #F4F6FA;"
 						v-for="(item,index) in listViewDetails.newsitemList[0].tagMap" :key="index">{{item.tagName||"无"}}</span>
 						</p>
+					</a-col> -->
+					<!-- 标签部分暂时隐藏，先用这个a-col,等标签设置显示后，注释该部分，打开上面部分 -->
+					<a-col class="textRight" style="padding-righ:16px;width: 670px;margin-right: 24px;margin-bottom: 0px;min-height: 16px;">
 					</a-col>
 				</a-row>
-    			<a-row class="bassc">
-    			<a-timeline>
-    				<a-timeline-item v-for="(item,index) in processNodeList" :key="index">
+    			<a-row class="bassc" style="min-height:58px" >
+    			<a-timeline style="margin-top: 5px;">
+    				<a-timeline-item v-for="(item,index) in processNodeList" :key="index" style="height: 44px;">
     					<a-icon v-if="item.nodeStatus==='3'" slot="dot" type="check-circle"  theme="filled" style="font-size: 16px;color: #3264D5;" />
     					<a-icon v-if="item.nodeStatus==='4'" slot="dot" type="close-circle" theme="filled" style="font-size: 16px;color:#FF6A6A;" />
     					<a-icon v-if="item.nodeStatus==='2'" slot="dot" type="clock-circle"  theme="filled" style="font-size: 16px;color: #3264D5;" />
     					<a-icon v-if="item.nodeStatus==='5'" slot="dot" type="info-circle"  theme="filled" style="font-size: 16px;color: #EEB63F;" />
-    					<span style="display: inline-block;width: 90px;font-size: 14px;color: #55565D;">{{item.operatorName}}</span>
-    					<span style="display: inline-block;width: 120px;font-size: 14px; margin-left: 4px;color: #767885;">{{item.nodeStatusStr || '无'}}</span>
+    					<span style="display: inline-block;width: 135px;font-size: 14px;color: #55565D;">{{item.operatorName}}</span>
+    					<span style="display: inline-block;width: 120px;font-size: 14px; margin-left: 24px;color: #767885;">{{item.nodeStatusStr || '无'}}</span>
     					<span style="display: inline-block;margin-left:17px; font-size: 12px;color: #A6A8B4;">{{item.updateTime}}</span>
     				</a-timeline-item>
     			</a-timeline>
     			</a-row>
-				<div  v-show="Reject" style="width: 704px;margin-top: -32px;">
+				<div  v-show="Reject" style="width: 704px;margin-top: -18px;">
 					<div style="width: 704px;height: 104px;background: #F7F7FB ; padding:0 28px 0 16px">
-						<p style="font-size: 14px;font-weight: 500;color: #3C3D43;padding-top: 16px;clear: both;">驳回原因:</p>
-						<p style="font-size: 12px;color: #767885;margin-top:-8px;">{{reason}}</p>
+						<p style="font-size: 14px;font-weight: 500;color: #3C3D43;padding-top: 16px;clear: both;">{{curNodeStates?"驳回原因:":"发布失败原因:"}}</p>
+						<p style="font-size: 12px;color: #767885;margin-top:-8px;">{{curNodeStates?reason:publishReason}}</p>
 					</div>
 				</div>
 				<div  v-show="teamwork" style="margin-top: 16px;">
@@ -220,12 +272,12 @@
 										 :style="{color:record.processStatus==='拒绝发布'?'#FF6A6A':'#55565D'}"
 										>{{record.processStatus}}</a>
 										</a-popover>
-				
+
 										<span v-else>
 											{{record.processStatus}}
 										</span>
 							</span>
-				
+
 						</a-table>
 						<a-row v-show="tableB" >
 							<div style="margin:0 auto;margin-top: 50px;">
@@ -250,21 +302,24 @@
 			</p>
 		</div>
 	</a-modal>
-	<tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+	<tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 <script>
 import Vue from 'vue'
 import { USER_AUTH,USER_INFO } from '@/store/mutation-types'
-
+import { filterMediaPlatform } from '@/utils/util.js';
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { dataDictionary, contentManage, auditDetail, postByAlist ,thirdPublishChannelList,departmentList,ContentStatusData,channelList} from '@/api/api'
+import { dataDictionary, contentManage, auditDetail, postByAlist ,thirdPublishChannelList,departmentList,ContentStatusData,channelList,contentDepartment} from '@/api/api'
 import tooltip from "@/components/tooltip/tooltip.vue"
 export default {
   mixins: [JeecgListMixin],
    components:{ tooltip }  ,
   data() {
     return {
+	  publishReason:'', // 发布失败原因
+	  curNodeStates:false,
+	  isSpread:false,
 	  ContentStatus:[],
 	  message:'',//提示信息
 	  type:'',//提示类型
@@ -294,8 +349,10 @@ export default {
       //按钮权限，默认拥有全部权限
       authButton: {
         reviewBtn: true
-      },
+	  },
+	  mediaPlatform:[],// 媒体平台数据
       channel: [], //渠道存储列表
+    //   channel: null, //渠道存储列表
       media: [], //发布部门存储
       visible: false, // 弹窗显示与否的标志
       category: null, // 记录所有分类下的内容框的高度
@@ -373,7 +430,15 @@ export default {
         //   }
         // },
         {
-          title: '发布渠道',
+          title: '媒体平台',
+          align: 'center',
+          dataIndex: 'channelPlatform',
+		  width: 150,
+		  ellipsis:true,
+          className: 'table_title'
+        },
+        {
+          title: '账号',
           align: 'center',
           dataIndex: 'channelName',
 		  width: 150,
@@ -381,7 +446,7 @@ export default {
           className: 'table_title'
         },
         {
-          title: '发布人部门',
+          title: '发布部门',
           align: 'center',
           dataIndex: 'userDepartmentName',
           width: 150,
@@ -403,7 +468,7 @@ export default {
 		  ellipsis:true,
           dataIndex: 'publishTime',
 		//   scopedSlots: { customRender: 'publishTime' },
-          width: 100,
+          width: 150,
           className: 'table_title'
         },
         {
@@ -411,7 +476,8 @@ export default {
 		  ellipsis:true,
           align: 'center',
           dataIndex: 'wxIntPageReadCount',
-          width: 80,
+		  width: 60,
+		  scopedSlots: { customRender: 'wxIntPageReadCount' },
           className: 'table_title'
         },
         {
@@ -419,7 +485,8 @@ export default {
 		  ellipsis:true,
           align: 'center',
           dataIndex: 'shareCount',
-          width: 80,
+		  width: 60,
+		  scopedSlots: { customRender: 'shareCount' },
           className: 'table_title'
         },
         {
@@ -427,7 +494,8 @@ export default {
 		  ellipsis:true,
           align: 'center',
           dataIndex: 'commentCount',
-          width: 80,
+		  width: 60,
+		  scopedSlots: { customRender: 'commentCount' },
           className: 'table_title'
         },
         {
@@ -435,7 +503,8 @@ export default {
 		  ellipsis:true,
           align: 'center',
           dataIndex: 'giveCount',
-          width: 80,
+		  width: 60,
+		  scopedSlots: { customRender: 'giveCount' },
           className: 'table_title'
         },
     //     {
@@ -453,7 +522,7 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'action' },
         //   fixed: 'right',
-          width: 100,
+          width: 80,
           className: 'table_title'
         }
       ],
@@ -461,7 +530,6 @@ export default {
       channelChangeC: '', //搜索中的渠道
       mediaChangeC: '', //搜索中的部门
       showIndustry: false, // 所有分类中的产业是否显示
-      dataSource: [],
       categoryHeight: null, //   分类分级右侧元素高度
       channelHeight: null, //   渠道品牌右侧元素高度
       brandHeight: null, //   品牌右侧元素高度
@@ -469,14 +537,24 @@ export default {
       newsitemList: [], //newlist 存储
       lastList: [], //最后的渲染列表
       url: {
-        list: '/cms/content/newsitem/queryListForAdmin'
+        list: '/cms/content/newsitem/queryListForAdmin',
+		exportXlsUrl: '/cms/content/newsitem/exportExcel' //导出列表接口
       },
 	  statusOfGit:'',
 	  trueOfFalse:null,
+	  mediaPlate: [], // 媒体平台下拉选数据
+	  channelParams:{
+		type:1,
+		usercode:null,
+		// channel_platform:'sinaBlog'  , wechat
+		channel_platform:''
+	}
     }
   },
-  created() {},
-  computed: {},
+  created() {
+	  this.queryParam.publishStatus = "4"
+	  console.log("queryParam",this.queryParam)
+  },
   mounted() {
 	  this.ContentStatus=ContentStatusData;
     //根据当前页面路由的name去匹配按钮权限，取出当前页面的按钮权限并赋值给authButton
@@ -486,38 +564,87 @@ export default {
       this.authButton = auth[this.$route.name]
     }
 	let user = Vue.ls.get(USER_INFO)
-	let params = {
-		type:1,
-		usercode:user.userAccount
-	}
-	channelList(params).then(res=>{
+	this.channelParams.usercode = user.userAccount
+	// let params = {
+	// 	type:1,
+	// 	usercode:user.userAccount,
+	// 	// channel_platform:'sinaBlog'
+	// 	channel_platform:'wechat'
+	// }
+	this.getPublishChannel()
+	this.getAll()
+	document.onkeydown = this.keydown;
+	   // 获取媒体平台下拉选数据
+    // this.getMediaPlatform()
+  },
+  methods: {
+	//  获取发布渠道
+	getPublishChannel(){
+		channelList(this.channelParams).then(res=>{
+			// this.channel = []
 		let p = []
 		if(res.code ===200){
-			 res.data.forEach((item,index)=>{
-				 console.log(item)
-				 item.channelInfoList.forEach((itd)=>{
-					 this.channel.push(itd)
-				 })
+			//  res.data.forEach((item,index)=>{
+			// 	 console.log(item)
+			// 	 item.channelInfoList.forEach((itd)=>{
+			// 		 this.channel.push(itd)
+			// 	 })
+			// })
+
+			// filterMediaPlatform 筛选出微信，微博，抖音的数据
+			var newObj = filterMediaPlatform(res.data)
+			this.mediaPlate = newObj
+			console.log('newObj',newObj)
+			var allMedias = []
+			this.mediaPlate.map(item=>{
+				allMedias = allMedias.concat(item.channelInfoList)
 			})
-			
-			console.log(this.channel,'this.channel,')
+			this.channel = allMedias
 		}else{
-			// this.$message.error(res.message)
 			this.message = res.message
 			this.type = "error"
 			this.warnMethod()
 		}
 	})
-	this.getAll()
-  },
-  methods: {
+	},
+	  stateChange(val){
+		  this.queryParam.publishStatus = val
+		  console.log("状态：",val,  this.queryParam)
+	  },
+	      // 获取媒体平台下拉选数据
+    getMediaPlatform() {
+      dataDictionary({ dataType: 'mediaPlatform' }).then(res => {
+        if (res.code === 200) {
+			// 目前媒体平台先显示，微博，微信，抖音
+			var newObj = {}
+			var obj = res.data
+			 for(var i in obj){
+				if(i=='wechat'||i=='sinaBlog'||i=='douyin'){
+					newObj[i] = obj[i]
+				}
+			 }
+          this.mediaPlate = newObj
+        }else if(res.code!==400){
+          // this.$message.error(res.message)
+          this.message =  res.message
+          this.type = 'error'
+          this.warnMethod()
+        }
+      })
+    },
+	  keydown(e){//全局搜索
+	  	   var currKey=0,e=e||event;
+	  	   currKey=e.keyCode||e.which||e.charCode;//支持IE、FF
+	  	   if (currKey == 13){
+	  		  this.search();
+	  		  }
+	  },
 	  getAll(){
 	  	let params = {
-	  		page:1,
-	  		size:1000
+	  		// page:1,
+			//   size:1000,
+			departmentType:'2'
 	  	}
-	  	console.log("getALL执行了")
-		
 	  	// thirdPublishChannelList(params).then(res=>{
 	  	// 	if(res.code===200){
 	  	// 		this.channel = res.data.list
@@ -527,28 +654,23 @@ export default {
 				// this.$refs.tooltip.visible = true
 				// this.$refs.tooltip.alertVisible = true
 				// setTimeout(()=>{
-				//   this.$refs.tooltip.cancel() 
+				//   this.$refs.tooltip.cancel()
 				// },3000)
 	  	// 	}
 	  	// })
-		departmentList(params).then(res=>{
+		contentDepartment(params).then(res=>{
 			if(res.code ===200){
-				this.media=res.data.list
+				this.media=res.data
 			}else{
 				this.message = res.message
 				this.type='error'
 				this.$refs.tooltip.visible = true
 				this.$refs.tooltip.alertVisible = true
 				setTimeout(()=>{
-				  this.$refs.tooltip.cancel() 
+				  this.$refs.tooltip.cancel()
 				},3000)
 			}
 		})
-	  },
-	  enter(e){
-	    if(e.keyCode == 13){
-	      this.search()
-	    }
 	  },
     search(e) {
       // 搜索
@@ -568,10 +690,38 @@ export default {
     mediaChange(val) {
       // 选择 部门
       this.mediaChangeC = val ? val : ''
-    },
+	},
+	// 媒体平台下拉选改变后触发
+	mediaPlatformChange(val){
+		console.log('val:',val)
+		if(val===''){
+		var allMedia = []
+		this.mediaPlate.map(item=>{
+			allMedia = allMedia.concat(item.channelInfoList)
+		})
+		this.channel = allMedia
+		this.queryParam.channelPlatformCode = ''
+		}else if(val===undefined){
+			this.queryParam.channelPlatformCode = ''
+			this.channel = []
+			var allMedia2 = []
+			this.mediaPlate.map(item=>{
+				allMedia2 = allMedia2.concat(item.channelInfoList)
+			})
+			this.channel = allMedia2
+		}else{
+			var newArr = this.mediaPlate.filter(item=>{
+				return item.mediaPlatformCode === val
+			})
+			this.channel = newArr[0].channelInfoList
+			this.queryParam.channelPlatformCode = val
+		}
+		this.channelChangeC = ''
+	},
     channelChange(val) {
-      // 选择渠道
-      this.channelChangeC = val ? val : ''
+			console.log("发布渠道下拉:", val)
+	  // 选择渠道
+		this.channelChangeC = val ? val : ''
     },
     // 点击查看按钮触发
     handleLook(record,id, publishStatusStr,processId) {
@@ -594,6 +744,12 @@ export default {
 				this.statusOfGit = res.data.auditStatus/1;
 				console.log(this.statusOfGit,'this.statusOfGit')
 				this.listViewDetails = res.data
+        //详情发布状态
+        this.ContentStatus.forEach(item=>{
+          if(item['value'] == res.data.auditStatus){
+            this.listViewDetails['showStatus'] = item['label']
+          }
+        })
 				this.templateName = res.data.templateName
 				let last = res.data.contentXTFBDTOList //协同发布
 				let list = res.data.newsitemList;
@@ -603,6 +759,7 @@ export default {
 				}else{
 					this.reason = ""
 				}
+				console.log('last------;',last)
 				last.forEach((vat,index)=>{
 					let data = {
 					  key:index,
@@ -616,11 +773,15 @@ export default {
 					}else{
 						this.rejectReason=null
 					}
-					console.log(index,'data')
 					this.dataSourceSmall.push(data);
-					console.log(this.dataSourceSmall,"this.dataSourceSmall")
 				})
-				if(lest){
+				if(res.data.publishStatus==='5'&&res.data.publishReason){
+					this.Reject=true
+					this.curNodeStates=false
+					this.publishReason = res.data.publishReason
+				}else if(lest){
+					this.publishReason = ''
+					this.curNodeStates=true
 					lest.forEach((val,index)=>{
 						if(val.nodeStatus==4){
 							this.Reject=true
@@ -640,14 +801,11 @@ export default {
 					this.tableB = true
 				}
 
-				console.log(this.listViewDetails)
 				this.listViewVisible = true
 				this.contListI = list[0];
 				for (let i = 1; i < list.length; i++) {
 					this.contListSmall.push(list[i])
-					console.log(this.contListSmall)
 				}
-				console.log(this.contListI,"this.contListI")
 				if (this.contListI.mediaPath===""||this.contListI.mediaPath) {
 					this.VIDEO = true
 				} else {
@@ -687,13 +845,15 @@ export default {
         //console.log(idd,this.listViewDetails.newsitemList)
         list.find(function(value, index) {
           return value.title == title
-          console.log(value, '数组')
         })
       }
 
       this.itemDetail = data
     }
     // 获取媒体平台数据
+  },
+  beforeDestroy(){
+	  document.onkeydown=null;
   }
 }
 </script>
@@ -707,9 +867,6 @@ export default {
 	}
 	.ant-table-body {
 		margin: 0 !important;
-	}
-	.ant-calendar-picker-container {
-		// top: 216px !important;
 	}
 .list-view {
 	// margin-top:15px;
@@ -728,7 +885,6 @@ export default {
 		}
 		.basic{
 			color: #767885;
-			float: left;
 			display: block;
 			width: 700px;
 			.textRight{
@@ -750,7 +906,6 @@ export default {
 			}
 		}
 		.bassc{
-			margin-top: 172px;
 			margin-left: 2px;
 		}
 		.box {

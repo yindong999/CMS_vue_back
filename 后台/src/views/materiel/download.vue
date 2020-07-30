@@ -2,61 +2,68 @@
 <!-- 物料下载明细页面 -->
   <div>
     <a-card title="">
-      <a-row>
-        <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery">
-          <a-row type="flex" :gutter="24" style="display:flex;align-items:center;">
-            <a-col>活动节点</a-col>
-            <a-col :md="4" :sm="6">
+      <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery">
+      <a-row class="formStyle" style="display:flex!important;">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">活动节点</span>
               <!-- <a-select allowClear placeholder="请选择活动节点" v-model="queryParam.activeNode" @change="selectNode"> -->
-              <a-select allowClear placeholder="请选择活动节点" v-model="activeNodeId" @change="selectNode">
+              <a-select class="selCol" allowClear placeholder="请选择活动节点" v-model="activeNodeId" @change="selectNode" :showSearch="true" :filter-option="filterOption">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option :value="value.id" v-for="(value,index) in activeNode" :key="index">
                      {{value.dataName}}
                   </a-select-option>
                 </a-select>
             </a-col>
-            <a-col>物料类型</a-col>
-            <a-col :md="4" :sm="6">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">物料类型</span>
                <!-- <a-select allowClear placeholder="请选择物料类型" v-model="queryParam.materialType" @change="selectType"> -->
-               <a-select allowClear placeholder="请选择物料类型" v-model="materialTypeId" @change="selectType">
+               <a-select class="selCol" allowClear placeholder="请选择物料类型" v-model="materialTypeId" @change="selectType" :showSearch="true" :filter-option="filterOption">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option :value="value.id" v-for="(value,index) in materialType" :key="index">
                      {{value.dataName}}
                   </a-select-option>
                 </a-select>
             </a-col>
-            <a-col>物料名称</a-col>
-            <a-col :md="4" :sm="6">
-              <a-input allowClear placeholder="请输入物料名称" v-model="materialNameId"></a-input>
-            </a-col>
-            <a-col>下载工贸</a-col>
-            <a-col :md="4" :sm="6">
-              <a-select v-model="queryParam.downloadIndustryAndTradeId" allowClear placeholder="请选择下载工贸" style="width:100%;">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">物料名称</span>
+              <a-input class="selCol" allowClear placeholder="请输入物料名称" v-model="materialNameId"></a-input>
+            </a-col> 
+          </a-row>
+           <div class="btnCol"  style="width:170px;right:0;top:0;">
+                <!-- <div class="outerText" @click="isSpread = !isSpread">
+                  <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+                  <a-icon :type="!isSpread?'down':'up'" class="downUp"/>
+                </div> -->
+                <a-button @click="searchBtn" type="primary" class="queryBtn">
+                  <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+                  <span>查询</span>
+                </a-button>
+              </div>
+      </a-row>
+      <a-row v-if="isSpread" class="leftDiv" style="display:flex;align-items:center;margin-top:16px;">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">下载工贸</span>
+              <a-select class="selCol" v-model="queryParam.downloadIndustryAndTradeId" :showSearch="true" :filter-option="filterOption" allowClear placeholder="请选择下载工贸">
                   <a-select-option value="">全部</a-select-option>
                   <a-select-option :value="value.value" v-for="(value,index) in departmentData" :key="index">
                       {{value.label}}
                   </a-select-option>
                 </a-select>
             </a-col>
-          </a-row>
-        </a-form>
-      </a-row>
-      <a-row style="margin-top:16px;display:flex;align-items:center;" :gutter="24">
-        <a-col>下载日期</a-col>
-            <a-col :md="4" :sm="6">
-                <a-date-picker  style="width:100%;min-width: 100%;"
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">下载日期</span>
+                <a-date-picker  style="width:calc(100% - 97px)!important;min-width:calc(100% - 97px)!important;margin-left:16px;"
                     v-model="queryParam.downloadDateStart"
                     :disabled-date="disabledStartDate"
                     show-time
                     format="YYYY-MM-DD"
                     placeholder="请选择开始时间"
                     @openChange="handleStartOpenChange"
-                  />
+                  /> 
             </a-col>
-            <!-- <a-col></a-col> -->
-            <a-col :md="4" :sm="6" style="padding-right:0;">
-               <!-- <a-range-picker @change="downloadDate"></a-range-picker> -->
-                  <a-date-picker style="width:100%;min-width: 100%;"
+            <a-col style="display:flex;align-items:center;position: relative;left: -18px;" :span="8">
+                  <a-date-picker style="width:calc(100% - 97px)!important;min-width:calc(100% - 97px)!important;"
                     v-model="queryParam.downloadDateEnd"
                     :disabled-date="disabledEndDate"
                     show-time
@@ -69,18 +76,26 @@
         <!-- <a-col  style="position: absolute;right:0;">
           <a-button type="primary" icon="search" @click="searchBtn">查询</a-button>
         </a-col> -->
-          <a-col class="col" style="position:absolute;right:0;">
+          <!-- <a-col class="col" style="position:absolute;right:0;">
 						   <a-button @click="searchBtn" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					</a-col>
+					</a-col> -->
       </a-row>
+          <!-- 展开/收起按钮 -->
+        <div class="outerText" :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
+          <span @click="isSpread = !isSpread" style="cursor:pointer;">
+            <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+            <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
+          </span>
+        </div> 
+       </a-form>
     </a-card>
     <a-card title="物料下载明细表" :headStyle="{textAlign:'center','border-bottom':'none'}" :bodyStyle="{'padding-top':'0'}" style="margin-top:15px;">
       <a-table
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
@@ -107,8 +122,8 @@
       <!-- <a-row type="flex" justify="end">
         <a-pagination size="small" show-quick-jumper :default-current="2" :total="500" />
       </a-row> -->
-    </a-card> 
-   <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    </a-card>
+   <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 
@@ -116,15 +131,17 @@
 import Vue from "vue"
 import { dataDictionary,departmentAll,addMaterial,updateMaterial,departmentList } from '@/api/api'
 import { USER_AUTH } from "@/store/mutation-types"
-import { JeecgListMixin } from '@/mixins/JeecgListMixin' 
+import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import tooltip from "@/components/tooltip/tooltip.vue"
 export default {
   mixins: [JeecgListMixin],
   components:{ tooltip },
   data() {
     return {
+      isSpread:false,
+      bordered:false,
       message:'操作成功',
-      type:'info', 
+      type:'info',
       activeNodeId:undefined,
       materialTypeId:undefined,
       materialNameId:'',
@@ -169,7 +186,7 @@ export default {
           ellipsis: true,
           align: 'center',
           className: 'table_title',
-          width:150
+          width:120
         },
         {
           title: '物料类型',
@@ -197,7 +214,7 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'download_link' },
           className: 'table_title',
-          width:150
+          width:130
         },
         {
           title: '下载工贸',
@@ -214,7 +231,7 @@ export default {
           key: 'user_name',
           ellipsis: true,
           align: 'center',
-          width:150,
+          width:130,
           scopedSlots: { customRender: 'material_description' },
           className: 'table_title'
         },
@@ -224,7 +241,7 @@ export default {
           key: 'download_date',
           ellipsis: true,
           align: 'center',
-          width:150,
+          width:160,
           scopedSlots: { customRender: 'material_description' },
           className: 'table_title'
         }
@@ -282,21 +299,21 @@ export default {
     if(auth.hasOwnProperty(this.$route.name)){
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(() => {
-       setTimeout(()=>{
-        var dom = document.getElementsByClassName('ant-table-small')[0]
-        dom.style.border = 'none'
-      },200)
-    })
+    // setTimeout(() => {
+    //    setTimeout(()=>{
+    //     var dom = document.getElementsByClassName('ant-table-small')[0]
+    //     dom.style.border = 'none'
+    //   },200)
+    // })
   },
-  methods:{ 
+  methods:{
      warnMethod(){
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
-    },  
+    },
     searchBtn(){
       this.queryParam.activeNode = this.activeNodeId
       this.queryParam.materialType = this.materialTypeId
@@ -416,5 +433,12 @@ export default {
 .text{
    margin:0 16px 0 24px;
    padding:0!important;
+}
+// .ant-calendar-picker{
+//   min-width:100%!important;
+// }
+.selCol{
+  width:calc(100% - 97px);margin-left: 16px;
+  min-width: calc(100% - 97px);
 }
 </style>

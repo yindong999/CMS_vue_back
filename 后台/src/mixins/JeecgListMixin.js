@@ -321,9 +321,9 @@ export const JeecgListMixin = {
           link.click()
           document.body.removeChild(link); //下载完成移除元素
           window.URL.revokeObjectURL(url); //释放掉blob对象
-          this.message = "导出成功"
-          this.type = "info"
-          this.warnMethods()
+          // this.message = "导出成功"
+          // this.type = "info"
+          // this.warnMethods()
         }
       })
     },
@@ -371,7 +371,7 @@ export const JeecgListMixin = {
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
       setTimeout(()=>{
-        this.$refs.tooltip.cancel() 
+        this.$refs.tooltip.cancel()
       },3000)
     },
     /* 图片预览 */
@@ -391,6 +391,12 @@ export const JeecgListMixin = {
         text = text.substring(0,text.indexOf(","))
       }
       window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
+    },
+    //下拉框数据过滤
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.indexOf(input) >= 0
+      );
     },
   }
 

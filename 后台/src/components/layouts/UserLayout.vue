@@ -6,7 +6,7 @@
          <a-row class="title">
           <a-col style="display:flex;width:1200px;margin:0 auto;"> 
             <img src="@/assets/logo_title3.png" style="height:50px;" alt="">
-            <!-- <span class="p">内容营销中心</span> -->
+            <!-- <span class="p">内容中心</span> -->
           </a-col> 
          </a-row>
       <!-- </div> -->

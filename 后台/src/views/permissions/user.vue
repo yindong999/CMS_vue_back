@@ -5,27 +5,23 @@
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
         <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row :gutter="24" style="display:flex;align-items:center;">
-            <a-col>
-              用户账号
-            </a-col>
-            <a-col :md="4" :sm="6">
-               <a-input v-model="queryParam.userAccount" placeholder="请输入用户账号" allowClear></a-input>
-            </a-col>
-            <a-col>
-              用户名称
-            </a-col>
-            <a-col :md="4" :sm="6">
-               <a-input placeholder="请输入用户名称" v-model="queryParam.userName" allowClear></a-input>
-            </a-col>
-            <a-col>
-              用户部门
-            </a-col>
-            <a-col :md="4" :sm="6">
+          <a-row class="formStyle">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+               <span class="textWidth4">用户账号</span>
+               <a-input style="width:calc(100% - 97px);margin-left: 16px;" v-model="queryParam.userAccount" placeholder="请输入用户账号" allowClear></a-input>
+            </a-col> 
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">用户名称</span>
+               <a-input style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请输入用户名称" v-model="queryParam.userName" allowClear></a-input>
+            </a-col> 
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">部门名称</span>
                  <a-select
-                    :showSearch="true"
-                    placeholder="请选择用户部门"
-                    @change="selectUserDep" allowClear
+                    style="width:calc(100% - 97px);margin-left: 16px;"
+                    placeholder="请选择部门名称"
+                    @change="selectUserDep"
+                    :showSearch="true" :filter-option="filterOption" allowClear
                   >
 
                     <a-select-option value="">全部</a-select-option>
@@ -36,14 +32,22 @@
                     >{{item.label}}</a-select-option>
                   </a-select>
             </a-col>
-            <a-col>
-              用户角色
-            </a-col>
-            <a-col :md="4" :sm="6">
+          </a-row>
+            <div class="btnCol" style="width:170px;"> 
+                <a-button @click="searchQuery" type="primary" class="queryBtn">
+                  <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+                  <span>查询</span>
+                </a-button>
+              </div>
+           </a-row>
+          <a-row class="leftDiv" style="display:flex;align-items:center;margin-top:16px;" v-if="isSpread">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">角色名称</span>
                  <a-select
-                    :showSearch="true"
-                    placeholder="请选择用户角色"
-                     @change="selectUserRole" allowClear
+                   style="width:calc(100% - 97px);margin-left:16px;"
+                    placeholder="请选择角色名称"
+                     @change="selectUserRole"
+                    :showSearch="true" :filter-option="filterOption" allowClear
                   >
                     <a-select-option value="">全部</a-select-option>
                     <a-select-option
@@ -53,15 +57,20 @@
                     >{{item.label}}</a-select-option>
                   </a-select>
             </a-col>
-          </a-row>
-          <a-row style="margin-top:8px;" type="flex" justify="end">
                 <!-- <a-button type="primary" @click="searchQuery" icon="search">查询</a-button> -->
-                <a-col class="col">
+                <!-- <a-col class="col">
                 <a-button @click="searchQuery" type="primary" class="queryBtn">
                 <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
               查询</a-button>
-              </a-col>
+              </a-col> -->
           </a-row>
+           <!-- 展开/收起按钮 -->
+          <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':!isSpread?'16px':'0'}">
+            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+              <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
+              <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
+            </span>
+          </div>
         </a-form>
       </div>
     </a-card>
@@ -73,14 +82,14 @@
           @click="handleAdd"
           type="primary"
           icon="plus"
-          style="position: absolute;top: 12px;right:32px;"
+          style="padding:0 16px;position:absolute;right:32px;"
         >新增</a-button>
       <div >
         <a-table
           style="height:500px"
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
@@ -108,7 +117,7 @@
       <user-modal :role="roleData" :department="departmentData" ref="modalForm" @ok="modalFormOk"></user-modal>
     </a-card>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 <script>
@@ -124,6 +133,8 @@ export default {
   components: { UserModal,tooltip },
   data() {
     return {
+      isSpread:false,
+      bordered:false,
       message:'操作成功',
       type:'info',
       headStyle:{
@@ -233,10 +244,10 @@ export default {
     //初始化时先加载全部部门和角色数据用于下拉筛选
     this.getRoleData()
     this.getDepartmentData()
-    setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },200)
+    // setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
   },
   methods: {
     // 点击用户部门触发
@@ -262,7 +273,7 @@ export default {
             this.roleData.push(option)
           })
           console.log('this.roleData', this.roleData)
-        }else if(res.code!==400){ 
+        }else if(res.code!==400){
           // this.$message.error(res.message)
           this.message = res.message
           this.type = "error"

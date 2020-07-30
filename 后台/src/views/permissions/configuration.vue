@@ -4,14 +4,16 @@
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row :gutter="24" style="display:flex;align-items:center;">
-            <a-col>媒体平台</a-col>
-            <a-col :md="4" :sm="6">
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle">
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">媒体平台</span>
                <a-select
+                  style="width:calc(100% - 97px);margin-left: 16px;"
                   :showSearch="true"
                   v-model="queryParam.channelPlatform"
                   placeholder="请选择媒体平台" allowClear
+                  :filter-option="filterOption"
                 >
                   <a-select-option
                     v-for="(item,key) in platformData"
@@ -20,12 +22,14 @@
                   >{{item.label}}</a-select-option>
                 </a-select>
             </a-col>
-            <a-col>渠道级别</a-col>
-            <a-col :md="4" :sm="6">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">渠道级别</span>
                 <a-select
+                  style="width:calc(100% - 97px);margin-left: 16px;"
                   :showSearch="true"
                   v-model="queryParam.channelLevel"
                   placeholder="请选择渠道级别" allowClear
+                  :filter-option="filterOption"
                 >
                   <a-select-option
                     v-for="(item,key) in rankData"
@@ -34,16 +38,16 @@
                   >{{item.label}}</a-select-option>
                 </a-select>
             </a-col>
-              <a-col>渠道名称</a-col>
-              <a-col :md="4" :sm="6">
-                  <a-input v-model="queryParam.channelName" placeholder="请输入渠道名称" allowClear></a-input>
+              <a-col style="display:flex;align-items:center;" :span="8">
+                <span class="textWidth4">渠道名称</span>
+                  <a-input style="width:calc(100% - 97px);margin-left: 16px;" v-model="queryParam.channelName" placeholder="请输入渠道名称" allowClear></a-input>
               </a-col>
-              <a-col class="col" style="position:absolute;right:0;">
+          </a-row>
+              <div class="btnCol" style="width:170px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
-					  </a-col>
-          </a-row>
+					  </div>
           <!-- <a-row style="margin-top:8px;" type="flex" justify="end">
             <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
           </a-row> -->
@@ -58,14 +62,14 @@
           @click="addConfig"
           type="primary"
           icon="plus"
-          style="position: absolute;top: 12px;right:32px;"
+          style="padding:0 16px;position:absolute;right:32px;"
         >新增</a-button>
       <div>
         <a-table
           style="height:500px;width:100%;"
           ref="table"
           size="small"
-          :bordered="false"
+          :bordered="bordered"
           rowKey="configId"
           :columns="columns"
           :dataSource="dataSource"
@@ -101,7 +105,7 @@
       <create-config-modal ref="addConfigModal" @ok="modalFormOk"></create-config-modal>
     </a-card>
     <!-- 提示弹窗 -->
-    <tooltip ref="tooltip" :message="message" :type="type"></tooltip> 
+    <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
 </template>
 <script>
@@ -117,6 +121,7 @@ export default {
   components: { CreateConfigModal,tooltip },
   data() {
     return {
+      bordered:false,
       message:'操作成功',
       type:'info',
       headStyle:{
@@ -222,10 +227,10 @@ export default {
     if(auth.hasOwnProperty(this.$route.name)){
       this.authButton = auth[this.$route.name]
     }
-    setTimeout(()=>{
-      var dom = document.getElementsByClassName("ant-table-small")[0]
-      dom.style.border= "none"
-    },150)
+    // setTimeout(()=>{
+    //   var dom = document.getElementsByClassName("ant-table-small")[0]
+    //   dom.style.border= "none"
+    // },200)
   },
   methods: {
     //获取全部角色数据

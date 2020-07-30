@@ -2,15 +2,12 @@
   <div>
     <!-- 顶部查询条件模块 -->
     <div style="background:#ECECEC; margin-bottom:12px">
-      <a-card title="">
+      <!-- <a-card title="">
         <a-form layout="inline">
-          <a-row>
-            <!--发布时间-->
-            <a-col :md="22" style="display:flex;align-items:center;"> 
-              <a-row :gutter="24" style="width:100%;display:flex;align-items:center;">
-                <a-col>操作时间</a-col>
-                <a-col :md="4" :sm="6">
-                    <a-date-picker  style="width:100%"
+          <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="6"> 
+                <span>操作时间</span>
+                    <a-date-picker  style="width:calc(100% - 85px)!important;min-width:calc(100% - 85px)!important;margin-left:16px;"
                      v-model="queryParam.startTime"
                         :disabled-date="disabledStartDate"
                         show-time
@@ -19,10 +16,8 @@
                         @openChange="handleStartOpenChange"
                       /> 
                 </a-col>
-                <!-- <a-col></a-col> -->
-                <a-col :md="4" :sm="6" style="padding-right:0;">
-                  <!-- <a-range-picker @change="downloadDate"></a-range-picker> -->
-                      <a-date-picker style="width:100%"
+                <a-col style="display:flex;align-items:center;" :span="6">
+                      <a-date-picker style="width:calc(100% - 85px)!important;min-width:calc(100% - 85px)!important;"
                       v-model="queryParam.entTime"
                         :disabled-date="disabledEndDate"
                         show-time
@@ -31,19 +26,16 @@
                         :open="endOpen"
                         @openChange="handleEndOpenChange"
                       />
-                </a-col>
-              </a-row>
-            </a-col>
-            <!-- 查询按钮 --> 
-            <a-col class="col" style="position:absolute;right:0;">
+                </a-col> 
+          </a-row>
+            <div class="btnCol" style="width:170px;">
               <a-button @click="queryLog" type="primary" class="queryBtn">
                 <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
                 <span>查询</span>
                 </a-button>
-            </a-col>
-          </a-row>
+            </div>
         </a-form>
-      </a-card>
+      </a-card> -->
     </div>
     <div>
       <a-card title="系统日志">
@@ -185,4 +177,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.ant-calendar-picker{
+  min-width:100%!important;
+}
 </style>
