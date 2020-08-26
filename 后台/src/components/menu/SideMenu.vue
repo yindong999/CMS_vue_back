@@ -66,7 +66,7 @@
       }
     },
     methods: {
-      onSelect (obj) {
+      onSelect (obj) { 
         console.log('obj,',obj)
         this.$emit('menuSelect', obj)
       }

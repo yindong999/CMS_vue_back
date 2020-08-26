@@ -6,7 +6,6 @@ import {
 // const baseUrl = 'http://nryx.haier.net' //新域名
 //测试环境
 const baseUrl = 'http://cms-main3.qd-aliyun.haier.net'
-//  const baseUrl = 'http://10.0.0.28'
 
 const api = {
   user: '/api/user',

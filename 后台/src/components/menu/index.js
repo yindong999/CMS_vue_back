@@ -58,8 +58,7 @@ export default {
   },
   methods: {
     // select menu item
-    onOpenChange (openKeys) {
-
+    onOpenChange (openKeys) { 
       // 在水平模式下时执行，并且不再执行后续
       if (this.mode === 'horizontal') {
         this.openKeys = openKeys
@@ -72,6 +71,7 @@ export default {
       } else {
         this.openKeys = latestOpenKey ? [latestOpenKey] : []
       }
+
     },
     updateMenu () {
       const routes = this.$route.matched.concat()

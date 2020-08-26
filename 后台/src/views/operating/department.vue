@@ -1,11 +1,16 @@
 <template>
   <div>
-    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;">
+    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;" class="statementQuery">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle">
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle"  type="flex" justify="space-between">
+
           <a-row class="leftDiv">
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">部门名称</span>
+              <a-input style="width:calc(100% - 97px);margin-left: 16px;" allowClear v-model="queryParam.departmentName" placeholder="请输入部门名称"></a-input>
+            </a-col>
             <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">部门类型</span>
               <a-select :showSearch="true" allowClear placeholder="请选择部门类型" style="width:calc(100% - 97px);margin-left: 16px;" @change="selectDepartment" :filter-option="filterOption">
@@ -13,12 +18,9 @@
                 <a-select-option v-for="(item,key) in departmentTypeData" :value="item.value" :key="key" >{{item.label}}</a-select-option>
               </a-select>
             </a-col>
-            <a-col style="display:flex;align-items:center;" :span="8">
-              <span class="textWidth4">部门名称</span>
-                <a-input style="width:calc(100% - 97px);margin-left: 16px;" allowClear v-model="queryParam.departmentName" placeholder="请填写部门名称"></a-input>
-            </a-col>
+
           </a-row>
-           <div class="btnCol"  style="width:170px;">
+           <div class="btnCol"  style="width:90px;">
 						<a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
@@ -31,10 +33,10 @@
     </a-card>
     <a-card :bordered="false" :hoverable="true" title="部门列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
       <!-- 操作按钮区域 -->
-        <a-button slot="extra" style="padding:0 16px;position:absolute;right:32px;" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button slot="extra" style="padding:0 16px;position:absolute!important;right:0!important;"
+         v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <div>
         <a-table
-          style="height:500px"
           ref="table"
           size="small"
           :bordered="bordered"
@@ -42,9 +44,11 @@
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
+          :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
           :loading="loading"
           @change="handleTableChange">
       <span slot="action" slot-scope="text, record">
+          <!-- <a @click="lookDetail(record)" style="color:#3264D5;margin-right:14px;">详情</a> -->
           <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" @click="handleEdit(record)" style="color:#3264D5;margin-right:14px;">编辑</a>
           <!-- <a-divider v-if="authButton.hasOwnProperty('deleteBtn')&&authButton.deleteBtn" type="vertical" /> -->
           <a-popconfirm v-if="authButton.hasOwnProperty('deleteBtn')&&authButton.deleteBtn" title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -55,6 +59,8 @@
       </div>
       <!-- 新增编辑部门信息 -->
       <department-modal ref="modalForm" @ok="modalFormOk"></department-modal>
+      <!-- 部门详情 -->
+      <department-detail-modal ref="detailModalForm"></department-detail-modal>
     </a-card>
     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
   </div>
@@ -65,11 +71,12 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { DepartmentTypeData } from '@/api/api'
   import DepartmentModal from './modules/DepartmentModal'
+  import DepartmentDetailModal from './modules/DepartmentDetailModal'
   import tooltip from "@/components/tooltip/tooltip.vue"
   export default {
     name: "Department",
     mixins:[JeecgListMixin],
-    components: { DepartmentModal,tooltip },
+    components: { DepartmentModal,DepartmentDetailModal,tooltip },
     data () {
       return {
         bordered:false,
@@ -183,6 +190,15 @@
     // },200)
     },
     methods: {
+      lookDetail(record){
+        var obj = Object.assign({}, record)
+        obj.departmentType = obj.departmentType === '0' ? '海尔':'供应商'
+        obj.contacter = obj.contacter ? obj.contacter:' '
+        obj.contacterMobile = obj.contacterMobile ? obj.contacterMobile:' '
+        this.$refs.detailModalForm.edit(obj);
+        this.$refs.detailModalForm.title = "详情";
+        this.$refs.detailModalForm.allDisabled = true;
+      },
       selectDepartment(e){
         this.queryParam.departmentType = e!==""?e:""
       },

@@ -43,7 +43,7 @@
       </p>
       <div style="width:100%;height:303px" ref="chart"></div>
     </div>
-    <a-modal title="平台发布统计" :visible="visible" @cancel="handleCancel" width="1200px" :footer="null">
+    <a-modal  title="平台发布统计" :visible="visible" @cancel="handleCancel" width="1200px" :footer="null">
       <a-row :gutter="24" style="display:flex;align-items:center;margin-bottom: 25px;">
         <!-- 审核状态 -->
         <a-col>媒体平台</a-col>
@@ -100,19 +100,22 @@
             style="width: 100%;"
           ></a-date-picker>
         </a-col> -->
-         <a-col>选择日期</a-col>
+         <a-col>发布日期</a-col>
         <a-col :md="4" :sm="6">
-              <a-date-picker v-model="mytime_start" placeholder="请选择开始日期" :disabledDate="disabledStartDate2" 
+              <a-date-picker v-model="mytime_start" placeholder="开始日期" :disabledDate="disabledStartDate2" 
               style="width:100%" 
               @change="stime2" @ok="ok3"/>
         </a-col>
         <a-col :md="4" :sm="6">
-            <a-date-picker v-model="mytime_end" placeholder="请选择结束日期" :disabledDate="disabledEndDate2" 
+            <a-date-picker v-model="mytime_end" placeholder="结束日期" :disabledDate="disabledEndDate2" 
               style="width:100%"
             @change="etime2" @ok="ok4"/>
         </a-col>
         <a-col style="position: absolute;right: 0px;">
-          <a-button type="primary" icon="search" @click="onSearch" style="background: #3264D5;">查询</a-button>
+          <a-button type="primary" @click="onSearch" class="queryBtn" style="background: #3264D5;">
+              <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+              <span>查询</span>
+          </a-button>
         </a-col>
       </a-row>
 
@@ -156,12 +159,12 @@
       <a-row type="flex" justify="center">
         <img :src=codeImage alt style="width:180px;height:180px;" />
       </a-row>
-      <a-row style="color:#3C3D43;font-size:14px;margin:10px 0;" type="flex" justify="center">请扫描二维码</a-row>
-      <a-row
+      <a-row style="color:#3C3D43;font-size:14px;margin:10px 0;" type="flex" justify="center">扫描二维码可在手机上审核发布</a-row>
+      <!-- <a-row
         style="color:#767885;font-size:12px;"
         type="flex"
         justify="center"
-      >关注审核服务号并绑定账号，移动端审核更便捷</a-row>
+      >关注审核服务号并绑定账号，移动端审核更便捷</a-row> -->
     </a-modal>
   </div>
 </template>
@@ -257,7 +260,7 @@ export default {
       mediaPlate: '',
       Vatis: [],
       bannlId: '',
-      codeImage:require('@/assets/gongzhonghao_prod.jpg'),
+      codeImage:require('@/assets/gongzhonghao_prod.jpg'), // 生产环境公众号二维码
       params:{
         // page: 1,
         // size: 1000,
@@ -431,20 +434,8 @@ export default {
       return startValue.valueOf() >= endValue.valueOf()
     },
     mediaPlatformChange(e) {
-         console.log('eeee',e)
-      // 当选择全部时，目前参数allMediaPlatform 设置为 ‘抖音,微信公众号,新浪微博’
-      if(e===''){
-         this.queryParam.mediaPlatform = ''
-         var newStr = ''
-         for(var i in this.meidiaS){
-          newStr += this.meidiaS[i] + ','
-         }
-        newStr = newStr.substr(0,newStr.length-1)
-        this.params.allMediaPlatform = newStr
-        this.params.mediaPlatform = ''
-        this.channelChangeC = ''
-        this.getChannels()
-      }else if(e===undefined){
+         console.log('eeee',e) 
+      if(e===''||e===undefined){
         this.bannlId = ''
         this.queryParam.mediaPlatform = ''
         var newStr2 = ''
@@ -456,7 +447,7 @@ export default {
 
         this.params.mediaPlatform = ''
         this.channelChangeC = ''
-        this.channel = []
+        // this.channel = []
         this.getChannels()
       }else{
         this.bannlId = e
@@ -526,8 +517,12 @@ export default {
       let myChart = this.$echarts.init(this.$refs.chart)
       myChart.setOption({
         legend: { type: 'plain' },
-        tooltip: {},
-
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+              type: 'shadow'
+          }
+        },
         dataset: {
           source: [
             ['product', '新浪微博', '微信公众号', '抖音', '小红书', '知乎', '头条号', '官网', '社区', '其他'],
@@ -717,6 +712,6 @@ export default {
   height: 100%;
 }
 .cursor {
-  cursor: pointer;
+  // cursor: pointer;
 }
 </style>

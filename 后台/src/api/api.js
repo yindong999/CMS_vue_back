@@ -26,7 +26,7 @@ const contentDepartment = (params) => postAction("/cms/department/listByDepartme
 
 //营销管理】
 
-const downLoad = (params) => getAction("/cms/classics/case/download/info/add", params); 
+const downLoad = (params) => getAction("/cms/classics/case/download/info/add", params);
 const addCenter = (params) => postAction("/cms/classics/case/add", params);
 const DeleteCenter = (params) => getAction("/cms/classics/case/delete", params);
 const updateCent = (params) => postAction("/cms/classics/case/update", params);
@@ -98,6 +98,8 @@ const editMenu = (params) => postAction("/cms/permission/update", params)
 const departmentAll = (params) => postAction("/cms/system/dic/getAllLevelData", params);
 // 根据渠道ID查询审核者
 const getAuditorByChannelId = (params) => postAction("/cms/process/config/getAuditorByChannelId", params)
+// 根据渠道ID查询者编辑
+const getEditorByChannelId = (params) => getAction("/cms/process/config/getEditorByChannelId", params)
 // 一级审核者确定剩余审核节点
 const fixupReviewer = (params) => postAction("/cms/process/manage/fixupReviewer", params)
 // 物料新增
@@ -122,31 +124,40 @@ const findChannelList = (params) => postAction("/cms/xtfb/findChannelList", para
 const listTags = (params) => postAction("/cms/tag/selectCategory", params)
 
 //枚举映射关系
-const getdepartment = (params)=> postAction("/cms/department/list", params) 
+const getdepartment = (params)=> postAction("/cms/department/list", params)
 //评论回复
-const backContent = (params)=> postAction("/cms/content/comment/createComment", params) 
-
+const backContent = (params)=> postAction("/cms/content/comment/createComment", params)
+// 查询内容详情评价列表
+const getVideoCommentMessage = (params) => postAction("/cms/content/comment/getVideoCommentMessage", params);
+// 删除报备
+const deleteReport = (params) => postAction("/cms/content/report/delete", params);
 //发布类型
 const ContentStatusData = [
     { label: '草稿', value: '0' },
     { label: '待审核', value: '1' },
     { label: '待发布', value: '2' },
-    { label: '驳回待修改', value: '3' },
+    { label: '退回待修改', value: '3' },
     { label: '已发布', value: '4' },
-    { label: '发布失败', value: '5' }
+    { label: '发布失败', value: '5' },
+    { label: '协同已关闭', value: '6' }
 ];
 //部门类型枚举映射
 const DepartmentTypeData = [
     { label: '海尔', value: '0' },
     { label: '供应商', value: '1' }
 ];
+//内容类型枚举映射
+const ContentTypeData = [
+  { label: '视频', value: 'media' },
+  { label: '图文', value: 'news' }
+];
 export {
-	ContentStatusData,
-	addCenter,
-	DeleteCenter,
-	updateCent,
-	backContent,
-	getdepartment,
+    ContentStatusData,
+    addCenter,
+    DeleteCenter,
+    updateCent,
+    backContent,
+    getdepartment,
     listTags,
     outline,
     downloadMaterial,
@@ -193,17 +204,21 @@ export {
     addMenu,
     editMenu,
     departmentAll,
-	postAlist,
+	  postAlist,
     getAuditorByChannelId,
     fixupReviewer,
     postByAlist,
     findChannelList,
-	deleteAlist,
-	contentTop,
-	findCenter,
-	downLoad,
-	FindeBy,
-	changeDownToUp,
+    deleteAlist,
+    contentTop,
+    findCenter,
+    downLoad,
+    FindeBy,
+    changeDownToUp,
     changeUpToDown,
-    contentDepartment
+    contentDepartment,
+    getEditorByChannelId,
+    ContentTypeData,
+    getVideoCommentMessage,
+    deleteReport
 }

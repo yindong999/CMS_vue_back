@@ -1,12 +1,12 @@
 <template>
   <!-- 中国区整合营销线下物料明细表页面 -->
   <div>
-    <a-card title="">
+    <a-card title="" class="statementQuery">
       <a-row>
-        <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery" class="formStyle">
+        <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery" class="formStyle" type="flex" justify="space-between">
           <a-row class="leftDiv">
             <a-col style="display:flex;align-items:center;" :span="8">
-              <span class="textWidth2">部门</span>
+              <span class="textWidth4" style="text-align:right;">部门</span>
               <!-- <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择部门" @change="selectDept" :showSearch="true" :filter-option="filterOption" allowClear v-model="dept">
                 <a-select-option value>全部</a-select-option>
                 <a-select-option
@@ -20,7 +20,7 @@
 					        background:#F5F5F5;height:32px;border: 1px solid #d9d9d9;padding-left:11px;">
 				        	中国区整合营销</div>
             </a-col>
-            <a-col style="display:flex;align-items:center;position: relative;left: -28px;" :span="8">
+            <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">活动节点</span>
               <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择活动节点" @change="selectNode" :showSearch="true" :filter-option="filterOption" allowClear>
                 <a-select-option value>全部</a-select-option>
@@ -31,7 +31,7 @@
                 >{{value.dataName}}</a-select-option>
               </a-select>
             </a-col>
-            <a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+            <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">物料类型</span>
               <a-select style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请选择物料类型" @change="selectType" :showSearch="true" :filter-option="filterOption" allowClear>
                 <a-select-option value>全部</a-select-option>
@@ -44,7 +44,7 @@
             </a-col>
      
           </a-row>
-            <div class="btnCol"  style="width:170px;right:0;top:0;">
+            <div class="btnCol"  style="width:90px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
@@ -68,20 +68,20 @@
         slot="extra"
         type="primary"
         icon="plus"
-        style="padding:0 16px;position:absolute;right:32px;"
+        style="padding:0 16px;position:absolute!important;right:0!important;"
         @click="addModelShow"
       >新增</a-button>
       <a-table
         :columns="columns"
         size="small"
         :bordered="bordered"
-        style="height:500px"
         ref="table"
         rowKey="id"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
         @change="handleTableChange"
+        :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
       >
         <!-- 物料名称 -->
         <span slot="materialName" slot-scope="text, record">
@@ -144,7 +144,7 @@
       </a-row>-->
     </a-card>
       <!-- 物料新增或者编辑窗口 -->
-    <a-modal
+    <a-modal :centered="true"
       :title="titles"
       :width="800"
       v-model="isShowModal"
@@ -232,11 +232,17 @@
             <p v-if="showStand" style="color:#A6A8B4;margin:0;height:12px;line-height:12px;">名称标准：活动主题-涉及产品-其他</p>
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="物料描述">
-            <a-input
-              type="textarea"
+            <!-- 将a-input改成了a-textarea -->
+            <a-textarea
+              :autosize="{ minRows: 2, maxRows: 6 }"
               placeholder="请输入物料描述"
               v-decorator="[ 'materialDescription', validatorRules.materialDescription]"
             />
+            <!-- <a-input
+              type="textarea" 
+              placeholder="请输入物料描述"
+              v-decorator="[ 'materialDescription', validatorRules.materialDescription]"
+            /> -->
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="下载链接">
             <a-input
@@ -248,7 +254,7 @@
       </a-spin>
     </a-modal>
     <!-- 查看 -->
-    <a-modal
+    <a-modal :centered="true"
       v-model="isShowModal2"
       title="物料详情"
       :footer="null"
@@ -259,19 +265,19 @@
       <a-row class="add_row">
         <a-col :span="3" style="text-align:right;">部门:</a-col>
         <a-col :span="16" class="add_col2">
-          <a-input :disabled="true" :value="departmentName" class="input_color"></a-input>
+          <a-input :readOnly="true" :value="departmentName" class="input_color"></a-input>
         </a-col>
       </a-row>
       <a-row class="add_row">
         <a-col :span="3" style="text-align:right;">活动节点:</a-col>
         <a-col :span="16" class="add_col2">
-          <a-input :disabled="true" :value="activeNodeName" class="input_color"></a-input>
+          <a-input :readOnly="true" :value="activeNodeName" class="input_color"></a-input>
         </a-col>
       </a-row>
       <a-row class="add_row">
         <a-col :span="3" style="text-align:right;" class="add_col1">物料类型:</a-col>
         <a-col :span="16" class="add_col2">
-          <a-input :disabled="true" :value="materialTypeName" class="input_color"></a-input>
+          <a-input :readOnly="true" :value="materialTypeName" class="input_color"></a-input>
         </a-col>
       </a-row>
       <a-row style="display:flex;align-items:center;" class="add_row">
@@ -279,7 +285,7 @@
         <a-col :span="16" style="margin-left:16px;">
           <a-input
             placeholder="请输入物料名称"
-            :disabled="true"
+            :readOnly="true"
             v-model="add.materialName"
             class="input_color"
           ></a-input>
@@ -290,7 +296,7 @@
         <a-col :span="16" class="add_col2">
           <a-textarea
             style="width:100%;"
-            :disabled="true"
+            :readOnly="true"
             placeholder="请输入描述"
             v-model="add.materialDescription"
             :autosize="true"
@@ -303,7 +309,7 @@
         <a-col :span="16" style="margin-left:16px;">
           <a-input
             placeholder="请输入物料下载链接"
-            :disabled="true"
+            :readOnly="true"
             type="textarea"
             :autosize="true"
             v-model="add.downloadLink"
@@ -649,15 +655,14 @@ export default {
       this.form.validateFields((err, values) => {
         console.log('err123:',err)
           if (!err) {
-			this.disabled=true;
-			console.log(this.disabled)
+			      this.disabled=true;
+			      console.log(this.disabled)
             this.confirmLoading = true
             let formData = Object.assign(this.model, values)			
             formData.departmentId = this.dept
             let obj = this.model.id ? updateMaterial(formData) : addMaterial(formData)
             obj.then(res => {
               if (res.code === 200) {
-				  this.disabled=false;
                  if(this.model.id){
                   this.message = "修改成功"
                   }else{
@@ -676,6 +681,7 @@ export default {
               }
             }).finally(() => {
                this.confirmLoading = false
+               this.disabled=false;
             })
           }
         })
@@ -767,7 +773,7 @@ export default {
   align-items: center;
   .add_col1 {
     color: #55565d;
-    font-size: 14px;
+    font-size: 14px; 
   }
   .add_col2 {
     margin-left: 16px;
@@ -775,6 +781,8 @@ export default {
 }
 .input_color {
   color: #55565d;
+  background:#F5F5F5;
+  border: 1px solid #d9d9d9;box-shadow: none;
 }
 .conditon {
   width: 200px;

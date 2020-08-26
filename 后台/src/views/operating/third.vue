@@ -5,9 +5,9 @@
       </div>
     <!-- 查询条件 -->
     <div :class="[flag?'block':'none']">
-      <a-card title="" :bordered="false" style="width: 100%;margin-bottom:12px;">
+      <a-card title="" :bordered="false" style="width: 100%;margin-bottom:12px;" class="statementQuery">
          <a-form layout="inline" @keyup.enter.native="queryThirdList">
-          <a-row class="formStyle" style="width:100%;">
+          <a-row class="formStyle" style="width:100%;"  type="flex" justify="space-between">
           <a-row class="leftDiv">
             <a-col style="display:flex;align-items:center;" :span="8">
             <span class="textWidth4">媒体平台</span>
@@ -29,7 +29,7 @@
               <span class="textWidth4">渠道名称</span>
                   <a-input
                   allowClear
-                  placeholder="请填写渠道名称"
+                  placeholder="请输入渠道名称"
                   v-model="queryParam.channelName"
                   @change="channelNameChange"
                     style="width:calc(100% - 97px);margin-left: 16px;"
@@ -52,21 +52,22 @@
               </a-select>
 			  	</a-col>
 			  	</a-row>
-              <div class="btnCol"  style="width:170px;"> 
+              <div class="btnCol"  style="width:90px;">
                 <a-button @click="queryThirdList" type="primary" class="queryBtn">
                   <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
                   <span>查询</span>
                 </a-button>
-              </div> 
+              </div>
           </a-row>
           <a-row v-if="isSpread" class="leftDiv" style="display:flex;align-items:center;margin-top:16px;">
 						 <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">渠道状态</span>
 							<a-select
-                placeholder="请选择渠道状态" 
+                placeholder="请选择渠道状态"
                 @change="changeUp"
                 style="width:calc(100% - 97px);margin-left: 16px;"
                 :showSearch="true" :filter-option="filterOption"
+                defaultValue="上架"
               >
                 <a-select-option
                   :value="key"
@@ -75,14 +76,14 @@
                 >{{value.status}}</a-select-option>
               </a-select>
 						</a-col>
-          </a-row> 
+          </a-row>
           <!-- 展开/收起按钮 -->
           <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':!isSpread?'16px':'0'}">
-            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+            <span @click="toggle" style="cursor:pointer;">
               <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
               <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
             </span>
-          </div> 
+          </div>
          </a-form>
         <!-- <a-row style="margin-top: 8px;" type="flex" justify="end">
                 <a-button
@@ -96,12 +97,11 @@
     </div>
     <!-- 第三方账号 -->
     <div :class="['self',flag?'block':'none']">
-      <a-card title="账号" :headStyle="headStyle" :bodyStyle="bodyStyle" :bordered="false" style="width: 100%;">
-        <a-button icon="plus" style="padding:0 16px;position: absolute;right: 32px;" slot="extra"
+      <a-card title="渠道列表" :headStyle="headStyle" :bodyStyle="bodyStyle" :bordered="false" style="width: 100%;">
+        <a-button icon="plus" style="padding:0 16px;position:absolute;right:0;" slot="extra"
          v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" type="primary" @click="add">新增</a-button>
         <div>
           <a-table
-            style="height:500px"
             ref="table"
             size="small"
             :bordered="bordered"
@@ -110,6 +110,7 @@
             :dataSource="dataSource"
             :pagination="ipagination"
             :loading="loading"
+            :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
             @change="handleTableChange"
           >
             <span slot="action2" slot-scope="text, record">
@@ -215,7 +216,7 @@
                   style="width:23%;"
                   allowClear
                   v-model="addBasicMsg.channelName"
-                  placeholder="请填写渠道名称"
+                  placeholder="请输入渠道名称"
                   @change="addChannelName"
                 />
                       <!-- 联系人 -->
@@ -224,7 +225,7 @@
                   style="width:23%;"
                   allowClear
                   v-model="addBasicMsg.contacter"
-                  placeholder="请填写联系人"
+                  placeholder="请输入联系人"
                   @change="addContacter"
                 />
               </a-col>
@@ -252,7 +253,7 @@
                   style="width:23%;"
                   v-model="contacterMobile"
                   allowClear
-                  placeholder="请填写联系方式"
+                  placeholder="请输入联系方式"
                 />
               </a-col>
             </a-row>
@@ -487,7 +488,7 @@
                   style="width:23%;"
                   allowClear
                   v-model="addBasicMsg.channelName"
-                  placeholder="请填写渠道名称"
+                  placeholder="请输入渠道名称"
                   @change="addChannelName"
                 />
                 <!-- 联系人 -->
@@ -496,7 +497,7 @@
                   style="width:23%;"
                   allowClear
                   v-model="addBasicMsg.contacter"
-                  placeholder="请填写联系人"
+                  placeholder="请输入联系人"
                   @change="addContacter"
                 />
               </a-col>
@@ -523,7 +524,7 @@
                   style="width:23%;"
                   v-model="addBasicMsg.contacterMobile"
                   allowClear
-                  placeholder="请填写联系方式"
+                  placeholder="请输入联系方式"
                 />
               </a-col>
             </a-row>
@@ -691,7 +692,7 @@
       <img style="height:400px;width:100%;" :src="imgSrc" />
     </a-modal>
      <!-- 图片预览弹窗 -->
-  <a-modal
+    <a-modal :centered="true"
       width="800px"
       title="图片预览"
       :keyboard="true"
@@ -703,6 +704,21 @@
     </a-modal>
     <!-- 信息提示框 -->
     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
+    <!-- 删除图片时的提示弹窗 -->
+    <a-modal v-model="visibleWarn" title="提示" :zIndex="1010" :centered="true" :footer="null">
+      <p style="text-align:center;">您确认要删除上传的头像吗？</p>
+       <!-- <template slot="footer"> -->
+        <div :style="{ textAlign: 'center',padding:'24px 16px 0'}">
+          <a-config-provider :auto-insert-space-in-button="false">
+            <a-button type="primary"  @click="sureDelete" class="affirmBtn">确认</a-button>
+          </a-config-provider>
+          <a-config-provider :auto-insert-space-in-button="false">
+            <a-button @click="visibleWarn = false" class="abolishBtn">取消</a-button>
+          </a-config-provider>
+        </div>
+      <!-- </template> -->
+        
+    </a-modal>
   </div>
 </template>
  <script>
@@ -731,6 +747,7 @@ export default {
   components:{ tooltip },
   data() {
     return {
+      visibleWarn:false,// 提示弹窗是否显示的标志
       isSpread:false,
       bordered:false,
       message:'操作成功',
@@ -934,13 +951,22 @@ export default {
     blackClick(){
       return
     },
-    // 点击图片删除图标触发
-    deleteImage(){
+    sureDelete(){
       this.imgSrc = ""
       this.addBasicMsg.imgUrl = ""
       this.message = "删除成功"
       this.type = 'info'
       this.warnMethod()
+      this.visibleWarn = false
+    },
+    // 点击图片删除图标触发
+    deleteImage(){
+      this.visibleWarn = true
+      // this.imgSrc = ""
+      // this.addBasicMsg.imgUrl = ""
+      // this.message = "删除成功"
+      // this.type = 'info'
+      // this.warnMethod()
     },
     // 点击图片查看图标触发
     lookDetailImg(e){
@@ -1123,7 +1149,6 @@ export default {
     // 根据主键获取单条数据
     getThirdPublishChannelOne(msg) {
       var ids = Object.assign({},msg)
-      console.log('ddd',ids)
       // start1
       // 编辑部门
       if(ids.editDepartmentGroup && ids.editDepartmentGroup.length>0){
@@ -1142,7 +1167,16 @@ export default {
       // end2
       this.ele2 = []
       this.visible2 = true
-      this.addBasicMsg = ids
+      
+      var newIds = {} 
+      Object.keys(ids).forEach((j)=>{
+        if(ids[j]!= null && ids[j]!= ''){
+          console.log('=====',j , ids[j])
+          newIds[j] = ids[j]
+        }
+      })
+      this.addBasicMsg = newIds
+      // this.addBasicMsg = ids
       this.imgSrc = ids.imgUrl
       // 对 账号对接信息 数据进行解析
       ids.accountParms = ids.accountParms || '{"":""}'
@@ -1419,7 +1453,7 @@ export default {
         this.warnMethod()
         pass = false
       } else if (!this.addBasicMsg['channelName']) {
-        this.message = '请填写渠道名称'
+        this.message = '请输入渠道名称'
         this.type = 'error'
         this.warnMethod()
         pass = false

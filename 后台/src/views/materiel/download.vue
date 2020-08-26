@@ -1,9 +1,9 @@
 <template>
 <!-- 物料下载明细页面 -->
   <div>
-    <a-card title="">
+    <a-card title="" class="statementQuery">
       <a-form :labelCol="{span:7}" :wrapperCol="{span:17}" @keyup.enter.native="searchQuery">
-      <a-row class="formStyle" style="display:flex!important;">
+      <a-row class="formStyle" type="flex" justify="space-between">
           <a-row class="leftDiv">
             <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">活动节点</span>
@@ -30,7 +30,7 @@
               <a-input class="selCol" allowClear placeholder="请输入物料名称" v-model="materialNameId"></a-input>
             </a-col> 
           </a-row>
-           <div class="btnCol"  style="width:170px;right:0;top:0;">
+           <div class="btnCol"  style="width:90px;">
                 <!-- <div class="outerText" @click="isSpread = !isSpread">
                   <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
                   <a-icon :type="!isSpread?'down':'up'" class="downUp"/>
@@ -51,14 +51,14 @@
                   </a-select-option>
                 </a-select>
             </a-col>
-            <a-col style="display:flex;align-items:center;" :span="8">
+            <!-- <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">下载日期</span>
                 <a-date-picker  style="width:calc(100% - 97px)!important;min-width:calc(100% - 97px)!important;margin-left:16px;"
                     v-model="queryParam.downloadDateStart"
                     :disabled-date="disabledStartDate"
                     show-time
                     format="YYYY-MM-DD"
-                    placeholder="请选择开始时间"
+                    placeholder="开始时间"
                     @openChange="handleStartOpenChange"
                   /> 
             </a-col>
@@ -68,23 +68,29 @@
                     :disabled-date="disabledEndDate"
                     show-time
                     format="YYYY-MM-DD"
-                    placeholder="请选择结束时间"
+                    placeholder="结束时间"
                     :open="endOpen"
                     @openChange="handleEndOpenChange"
                   />
+            </a-col> -->
+
+            <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">下载日期</span>
+              <a-row style="width:calc(100% - 97px);margin-left:16px;">
+                <a-col style="display:flex;align-items:center;" :span="12">
+                  <a-date-picker style="width:calc(100% - 4px)!important;" v-model="downloadDateStart"
+						        placeholder="开始日期" :disabledDate="disabledStartDate2" @change="stime2" @ok="ok3"/>
+                </a-col>
+                <a-col style="display:flex;align-items:center;justify-content:flex-end;" :span="12">
+                  <a-date-picker style="float:right;width:calc(100% - 4px)!important;" v-model="downloadDateEnd"
+					        	placeholder="结束日期" :disabledDate="disabledEndDate2" @change="etime2" @ok="ok4"/>
+                </a-col> 
+              </a-row>
             </a-col>
-        <!-- <a-col  style="position: absolute;right:0;">
-          <a-button type="primary" icon="search" @click="searchBtn">查询</a-button>
-        </a-col> -->
-          <!-- <a-col class="col" style="position:absolute;right:0;">
-						   <a-button @click="searchBtn" type="primary" class="queryBtn">
-							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
-							查询</a-button>
-					</a-col> -->
       </a-row>
           <!-- 展开/收起按钮 -->
         <div class="outerText" :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
-          <span @click="isSpread = !isSpread" style="cursor:pointer;">
+          <span @click="toggle" style="cursor:pointer;">
             <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
             <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
           </span>
@@ -101,6 +107,7 @@
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
+          :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
           @change="handleTableChange">
           <span slot="download_link" slot-scope="text, record">
             <a-popover title trigger="hover">
@@ -138,6 +145,8 @@ export default {
   components:{ tooltip },
   data() {
     return {
+      st2:null, // 开始时间
+		  et2:null, // 结束时间
       isSpread:false,
       bordered:false,
       message:'操作成功',
@@ -259,8 +268,8 @@ export default {
         downloadDateStart:null,
         downloadDateEnd:null
       },
-      downloadDateStart:'',
-      downloadDateEnd:'',
+      downloadDateStart:null,
+      downloadDateEnd:null,
       departmentData:[],// 部门
       activeNode:[],// 活动节点
       materialType:[],// 活动类型
@@ -307,6 +316,70 @@ export default {
     // })
   },
   methods:{
+    	ok3(e) {
+				var time3 = new Date(new Date(e._d).getTime())
+				var startTime3 =
+					time3.getFullYear() +
+					'-' +
+					Number(time3.getMonth() + 1) +
+					'-' +
+					time3.getDate() +
+					' ' +
+					time3.getHours() +
+					':' +
+					time3.getMinutes() +
+					':' +
+					time3.getSeconds()
+				this.queryParam.downloadDateStart = startTime3
+				},
+				ok4(e) {
+				var time4 = new Date(new Date(e._d).getTime())
+				var endTime4 =
+					time4.getFullYear() +
+					'-' +
+					Number(time4.getMonth() + 1) +
+					'-' +
+					time4.getDate() +
+					' ' +
+					time4.getHours() +
+					':' +
+					time4.getMinutes() +
+					':' +
+					time4.getSeconds()
+				this.queryParam.downloadDateEnd = endTime4
+				},
+		   stime2(e1, e2) {
+				if (!e2) {
+					this.queryParam.downloadDateStart = ''
+					this.st2 = ''
+				} else {
+					this.queryParam.downloadDateStart = e2
+					this.st2 = e2
+				}
+			},
+			etime2(e1, e2) {
+			if (!e2) {
+				this.queryParam.downloadDateEnd = ''
+				this.et2 = ''
+			} else {
+				this.queryParam.downloadDateEnd = e2
+				this.et2 = e2
+			}
+			},
+			disabledStartDate2(startValue) {
+				const endValue = this.downloadDateEnd
+				if (!startValue || !endValue) {
+					return false
+				}
+				return startValue.valueOf() > endValue.valueOf()
+			},
+			disabledEndDate2(endValue) {
+				const startValue = this.downloadDateStart
+				if (!endValue || !startValue) {
+					return false
+				}
+				return startValue.valueOf() >= endValue.valueOf()
+			},
      warnMethod(){
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true

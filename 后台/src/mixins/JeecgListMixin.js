@@ -3,22 +3,27 @@
  * 高级查询按钮调用 superQuery方法  高级查询组件ref定义为superQueryModal
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
+// 表头固定
+// 1.引入mixins(data中定义了tabHeight,methods里面定义了toggle和setHeight方法，mounted里面调用了setHeight方法)
+// 2.给筛选条件的card加上 class="statementQuery"
+// 3.给要固定表头的table加上 :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
+// 4.展开/折叠按钮点击事件添加setHeight方法
 import { filterObj } from '@/utils/util';
-import { getAction, postAction,downFile } from '@/api/manage'
+import { getAction, postAction, downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN, USER_INFO } from "@/store/mutation-types"
 
 export const JeecgListMixin = {
-  data(){
+  data() {
     return {
       //token header
-      tokenHeader: {'authorization': Vue.ls.get(ACCESS_TOKEN)},
+      tokenHeader: { 'authorization': Vue.ls.get(ACCESS_TOKEN) },
       /* 查询条件-请不要在queryParam中声明非字符串值的属性 */
       queryParam: {},
       /* 数据源 */
-      dataSource:[],
+      dataSource: [],
       /* 分页参数 */
-      ipagination:{
+      ipagination: {
         current: 1,
         pageSize: 15,
         pageSizeOptions: ['15', '30', '45'],
@@ -30,28 +35,34 @@ export const JeecgListMixin = {
         total: 0
       },
       /* 排序参数 */
-      isorter:{
+      isorter: {
         // column: 'createTime',
         // order: 'desc',
       },
       /* 筛选参数 */
       filters: {},
       /* table加载状态 */
-      loading:false,
+      loading: false,
       /* table选中keys*/
       selectedRowKeys: [],
       /* table选中records*/
       selectionRows: [],
       /* 查询折叠 */
-      toggleSearchStatus:false,
+      toggleSearchStatus: false,
       /* 高级查询条件生效状态 */
-      superQueryFlag:false,
+      superQueryFlag: false,
       /* 高级查询条件 */
-      superQueryParams:""
+      superQueryParams: "",
+      // 表格的滚动高度
+      tabHeight: 0,
+      // 是不是第一页
+      isFirstPage:true,
+      // 是不是最后一页
+      isLastPage:false
     }
   },
   created() {
-    if(!this.disableMixinCreated){
+    if (!this.disableMixinCreated) {
       console.log(' -- mixin created -- ')
       let info = Vue.ls.get(USER_INFO)
       this.tokenHeader['uuss'] = info.id
@@ -59,13 +70,13 @@ export const JeecgListMixin = {
       // this.initDictConfig();
     }
   },
-  mounted(){
+  mounted() {
     this.loadData();
+    this.setHeight();//根据屏幕高度计算出表格的滚动高度
   },
-  methods:{
+  methods: {
     loadData(arg) {
-      console.log("arg:",arg)
-      if(!this.url.list){
+      if (!this.url.list) {
         // this.$message.error("请设置url.list属性!")
         this.message = "请设置url.list属性!"
         this.type = "error"
@@ -79,24 +90,23 @@ export const JeecgListMixin = {
       var params = this.getQueryParams();//查询条件
       this.loading = true;
       postAction(this.url.list, params).then((res) => {
-        console.log("loadData:",res)
         if (res.code === 200) {
-          this.dataSource = res.data.list?res.data.list:res.data;
-          if(res.data.unRead !== undefined){
+          this.dataSource = res.data.list ? res.data.list : res.data;
+          if (res.data.unRead !== undefined) {
             this.unRead = res.data.unRead
           }
-          if(res.data.totalAnnouncement !== undefined){
+          if (res.data.totalAnnouncement !== undefined) {
             this.totalAnnouncement = res.data.totalAnnouncement
           }
-          if(res.data.countAlreadyRead !== undefined){
+          if (res.data.countAlreadyRead !== undefined) {
             this.countAlreadyRead = res.data.countAlreadyRead
           }
-		  this.dataSource.forEach((val,index)=>{
-		  	val.tabIndexByTable = index+1;
-		  })
+          this.dataSource.forEach((val, index) => {
+            val.tabIndexByTable = index + 1;
+          })
           this.ipagination.total = res.data.total;
         }
-        if(res.code!==200 && res.code!==400){
+        if (res.code !== 200 && res.code !== 400) {
           // this.$message.warning(res.message)
           this.message = res.message
           this.type = "error"
@@ -105,25 +115,25 @@ export const JeecgListMixin = {
         this.loading = false;
       })
     },
-    initDictConfig(){
+    initDictConfig() {
       console.log("--这是一个假的方法!")
     },
     handleSuperQuery(arg) {
       //高级查询方法
-      if(!arg){
-        this.superQueryParams=''
+      if (!arg) {
+        this.superQueryParams = ''
         this.superQueryFlag = false
-      }else{
+      } else {
         this.superQueryFlag = true
-        this.superQueryParams=JSON.stringify(arg)
+        this.superQueryParams = JSON.stringify(arg)
       }
       this.loadData()
     },
     getQueryParams() {
       //获取查询条件
       let sqp = {}
-      if(this.superQueryParams){
-        sqp['superQueryParams']=encodeURI(this.superQueryParams)
+      if (this.superQueryParams) {
+        sqp['superQueryParams'] = encodeURI(this.superQueryParams)
       }
       // var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
       var param = Object.assign(this.queryParam);
@@ -160,7 +170,7 @@ export const JeecgListMixin = {
       this.loadData(1);
     },
     batchDel: function () {
-      if(!this.url.deleteBatch){
+      if (!this.url.deleteBatch) {
         // this.$message.error("请设置url.deleteBatch属性!")
         this.message = "请设置url.deleteBatch属性!"
         this.type = "error"
@@ -184,15 +194,15 @@ export const JeecgListMixin = {
           content: "是否删除选中数据?",
           onOk: function () {
             that.loading = true;
-            deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
-              if (res.code===200) {
+            deleteAction(that.url.deleteBatch, { ids: ids }).then((res) => {
+              if (res.code === 200) {
                 // that.$message.success('操作成功');
                 that.message = "操作成功"
                 that.type = "info"
                 that.warnMethods()
                 that.loadData();
                 that.onClearSelected();
-              } else if(res.code!==400){
+              } else if (res.code !== 400) {
                 // that.$message.warning(res.message);
                 that.message = res.message
                 that.type = "error"
@@ -206,8 +216,8 @@ export const JeecgListMixin = {
       }
     },
     handleDelete: function (id) {
-      console.log("id",id)
-      if(!this.url.delete){
+      console.log("id", id)
+      if (!this.url.delete) {
         // this.$message.error("请设置url.delete属性!")
         this.message = "请设置url.delete属性!"
         this.type = "error"
@@ -215,19 +225,19 @@ export const JeecgListMixin = {
         return
       }
       var that = this;
-      getAction(that.url.delete, {id: id}).then((res) => {
+      getAction(that.url.delete, { id: id }).then((res) => {
         if (res.code === 200) {
           // that.$message.success('操作成功');
           that.message = "删除成功"
           that.type = "info"
           that.warnMethods()
           that.loadData();
-        } else if(res.code!==400){
+        } else if (res.code !== 400) {
           // that.$message.warning(res.message);
           that.message = res.message
           that.type = "error"
           that.warnMethods()
-          }
+        }
       });
     },
     handleEdit: function (record) {
@@ -241,7 +251,7 @@ export const JeecgListMixin = {
       this.$refs.modalForm.disableSubmit = false;
     },
     handleTableChange(pagination, filters, sorter) {
-      console.log('pagination:',pagination,sorter)
+      console.log('pagination:', pagination, sorter)
       //分页、排序、筛选变化时触发
       //TODO 筛选
       if (Object.keys(sorter).length > 0) {
@@ -273,62 +283,66 @@ export const JeecgListMixin = {
           window.scrollTo(_currentY, targetY)
         }
       }, 1)
-        },
-    handleToggleSearch(){
+    },
+    handleToggleSearch() {
       this.toggleSearchStatus = !this.toggleSearchStatus;
     },
     modalFormOk() {
       // 新增/修改 成功时，重载列表
       this.loadData();
     },
-    handleDetail:function(record){
+    handleDetail: function (record) {
       this.$refs.modalForm.edit(record);
-      this.$refs.modalForm.title="详情";
+      this.$refs.modalForm.title = "详情";
       this.$refs.modalForm.disableSubmit = true;
     },
     /* 导出 */
-    handleExportXls2(){
+    handleExportXls2() {
       let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
       let url = `${window._CONFIG['domianURL']}/${this.url.exportXlsUrl}?paramsStr=${paramsStr}`;
       window.location.href = url;
     },
-    handleExportXls(fileName){
-      if(!fileName || typeof fileName != "string"){
+    handleExportXls(fileName) {
+      if (!fileName || typeof fileName != "string") {
         fileName = "导出文件"
       }
-      let param = {...this.queryParam};
-      if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+      let param = { ...this.queryParam };
+      if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
         param['selections'] = this.selectedRowKeys.join(",")
       }
-      console.log("导出参数",param)
-      downFile(this.url.exportXlsUrl,param).then((data)=>{
+      this.ExportXls = true;
+      this.exportTip();
+      downFile(this.url.exportXlsUrl, param).then((data) => {
+        this.ExportXls = false;
         if (!data) {
-          // this.$message.warning("文件下载失败")
-          this.message = "导出失败"
+          this.message = "导出失败!请重新尝试"
           this.type = "error"
           this.warnMethods()
           return
+        } else {
+          this.message = "导出成功!"
+          this.type = "info"
+          this.warnMethods()
         }
         if (typeof window.navigator.msSaveBlob !== 'undefined') {
-          window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
-        }else{
+          window.navigator.msSaveBlob(new Blob([data]), fileName + '.xls')
+        } else {
           let url = window.URL.createObjectURL(new Blob([data]))
           let link = document.createElement('a')
           link.style.display = 'none'
           link.href = url
-          link.setAttribute('download', fileName+'.xls')
+          link.setAttribute('download', fileName + '.xls')
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link); //下载完成移除元素
           window.URL.revokeObjectURL(url); //释放掉blob对象
-          // this.message = "导出成功"
-          // this.type = "info"
-          // this.warnMethods()
         }
+      }).catch(() => {
+        this.ExportXls = false;
       })
     },
     /* 导入 */
-    handleImportExcel(info){
+    handleImportExcel(info) {
       if (info.file.status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
@@ -342,7 +356,7 @@ export const JeecgListMixin = {
               title: message,
               content: (
                 <div>
-                  <span>{msg}</span><br/>
+                  <span>{msg}</span><br />
                   <span>具体详情请 <a href={href} target="_blank" download={fileName}>点击下载</a> </span>
                 </div>
               )
@@ -356,47 +370,67 @@ export const JeecgListMixin = {
           this.loadData()
         } else {
           // this.$message.error(`${info.file.name} ${info.file.response.message}.`);
-            this.message = info.file.response.message
-            this.type = "error"
-            this.warnMethods()
+          this.message = info.file.response.message
+          this.type = "error"
+          this.warnMethods()
         }
       } else if (info.file.status === 'error') {
         // this.$message.error(`文件上传失败: ${info.file.msg} `);
-            this.message = info.file.msg
-            this.type = "error"
-            this.warnMethods()
+        this.message = info.file.msg
+        this.type = "error"
+        this.warnMethods()
       }
     },
-    warnMethods(){
+    warnMethods() {
       this.$refs.tooltip.visible = true
       this.$refs.tooltip.alertVisible = true
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$refs.tooltip.cancel()
-      },3000)
+      }, 3000)
+    },
+    exportTip() {
+      this.$refs.exportTip.visible = true
+      this.$refs.exportTip.alertVisible = true
+      setTimeout(() => {
+        this.$refs.exportTip.cancel()
+      }, 2000)
     },
     /* 图片预览 */
-    getImgView(text){
-      if(text && text.indexOf(",")>0){
-        text = text.substring(0,text.indexOf(","))
+    getImgView(text) {
+      if (text && text.indexOf(",") > 0) {
+        text = text.substring(0, text.indexOf(","))
       }
-      return window._CONFIG['imgDomainURL']+"/"+text
+      return window._CONFIG['imgDomainURL'] + "/" + text
     },
     /* 文件下载 */
-    uploadFile(text){
-      if(!text){
+    uploadFile(text) {
+      if (!text) {
         this.$message.warning("未知的文件")
         return;
       }
-      if(text.indexOf(",")>0){
-        text = text.substring(0,text.indexOf(","))
+      if (text.indexOf(",") > 0) {
+        text = text.substring(0, text.indexOf(","))
       }
-      window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
+      window.open(window._CONFIG['domianURL'] + "/sys/common/download/" + text);
     },
     //下拉框数据过滤
     filterOption(input, option) {
       return (
         option.componentOptions.children[0].text.indexOf(input) >= 0
       );
+    },
+    // 点击展开折叠按钮重新计算表格滚动高度
+    toggle() {
+      this.isSpread = !this.isSpread;
+      this.$nextTick(() => {
+        this.setHeight();
+      })
+    },
+    // 动态设置表格滚动高度
+    setHeight() {
+      var domHeight = document.getElementsByClassName("statementQuery")[0].offsetHeight;
+      var cliHeight = document.body.clientHeight;
+      this.tabHeight = cliHeight - domHeight - 280;
     },
   }
 

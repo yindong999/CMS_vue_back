@@ -9,7 +9,7 @@
       </template>
       <span style="margin-right:32px ">
         <img src="@/assets/link.png" alt=""  style="width: 24px;height: 24px;">
-        <span style="margin-left:5px;color: #fff;position: relative;top:1px;">资源链接</span>
+        <span style="margin-left:5px;color: #fff;position: relative;top:1px;user-select:none;">资源链接</span>
       </span>
     </a-popover>
     <router-link
@@ -26,7 +26,7 @@
         <div style="position:relative;line-height:20px!important;">
         <img src="@/assets/message.png" style="width:20px;height:19px;cursor: pointer!important;" alt="">
         <div :class="['default',large?'largeSize':'defaultSize']" v-show="counts!==0">
-          <span  :style="{transform:'scale('+ (counts<10?1:counts<99?0.9:0.8)+')',position:'relative','font-size':'12px'}">{{!(counts>99)?counts:'99+'}}</span>
+          <div :style="{transform:'scale('+ (counts<10?1:counts<99?0.9:0.8)+')',position:'relative','font-size':'12px',width:'100%','line-height':'18px'}">{{!(counts>99)?counts:'99+'}}</div>
         </div>
       </div>
     </router-link>
@@ -131,6 +131,7 @@ export default {
     noReadMsgCount() {
       noReadMsg({readFlag:'0'}).then(res => {
         if (res.message === 'SUCCESS') {
+          // this.counts = 6
           this.counts = res.data
         } else {
           this.counts = 0
@@ -152,7 +153,9 @@ export default {
       const that = this
       this.$confirm({
         title: '提示',
-        content: '真的要注销登录吗 ?',
+        content: '您确认要退出吗？',
+        okText: '确认',
+        cancelText: '取消',
         onOk() {
           return that
             .Logout({})

@@ -1,9 +1,9 @@
 <template>
-  <a-locale-provider :locale="locale">
+  <a-config-provider :locale="locale">
     <div id="app">
       <router-view/>
     </div>
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 <script>
   import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
@@ -76,10 +76,18 @@
     }
   }
 </script>
-<style>
+<style lang="scss">
   #app,body,html {
-	width: 100%;
+	  width: 100%;
     height: 100%;
+  }
+  /* 大弹窗默认上边距为50px */
+  .ant-modal{
+    top:50px!important;
+  }
+  /* 表格最后一行加分割线 */
+  .ant-table-content{
+    border-bottom:1px solid #E8E8E8;
   }
    .ant-message-notice-content{
   padding:13px 30px!important;
@@ -179,7 +187,7 @@ th.ant-table-selection-column{
   cursor:pointer;
 }
 .leftDiv{
- width:calc(100% - 170px);display:flex;
+ width:calc(100% - 150px);display:flex;
 }
 .inputWidth{
   width:70%;margin-left: 16px;
@@ -192,6 +200,9 @@ th.ant-table-selection-column{
 }
 .textWidth2{
   width:28px;
+}
+.ant-card-head-wrapper{
+  position:relative!important;
 }
   /*按钮点击滑过之后的效果更改*/
   /*.ant-btn-primary:hover, .ant-btn-primary:focus{*/

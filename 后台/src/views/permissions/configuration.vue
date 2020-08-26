@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;">
+    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;" class="statementQuery">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
@@ -23,6 +23,10 @@
                 </a-select>
             </a-col>
             <a-col style="display:flex;align-items:center;" :span="8">
+              <span class="textWidth4">渠道名称</span>
+                <a-input style="width:calc(100% - 97px);margin-left: 16px;" v-model="queryParam.channelName" placeholder="请输入渠道名称" allowClear></a-input>
+            </a-col>
+            <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">渠道级别</span>
                 <a-select
                   style="width:calc(100% - 97px);margin-left: 16px;"
@@ -38,12 +42,8 @@
                   >{{item.label}}</a-select-option>
                 </a-select>
             </a-col>
-              <a-col style="display:flex;align-items:center;" :span="8">
-                <span class="textWidth4">渠道名称</span>
-                  <a-input style="width:calc(100% - 97px);margin-left: 16px;" v-model="queryParam.channelName" placeholder="请输入渠道名称" allowClear></a-input>
-              </a-col>
           </a-row>
-              <div class="btnCol" style="width:170px;">
+              <div class="btnCol" style="width:90px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
@@ -62,11 +62,10 @@
           @click="addConfig"
           type="primary"
           icon="plus"
-          style="padding:0 16px;position:absolute;right:32px;"
+          style="padding:0 16px;position:absolute!important;right:0!important;"
         >新增</a-button>
       <div>
         <a-table
-          style="height:500px;width:100%;"
           ref="table"
           size="small"
           :bordered="bordered"
@@ -75,6 +74,7 @@
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
+          :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
           @change="handleTableChange"
         >
           <!-- :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}" -->

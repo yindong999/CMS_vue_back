@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :centered="true"
     :title="title"
     :width="800"
     :visible="visible"

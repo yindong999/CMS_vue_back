@@ -29,7 +29,14 @@
       :zIndex="1200"
     >
       <!-- message: 要显示的文字信息，type：提示框类型，success：成功；info：信息；warning：警告；error：错误 -->
-      <a-alert style="width:320px;padding-right: 26px;" v-if="alertVisible" :message="message" :type="type" show-icon :closable="false" />
+      <a-alert style="width:320px;padding-right: 26px;" v-if="alertVisible" :message="message" :type="type | formatType" show-icon :closable="false">
+        <a-row slot="icon" type="flex" align="middle" v-if="type == 'info'">
+          <a-icon type="check-circle" />
+        </a-row> 
+        <a-row slot="icon" type="flex" align="middle" v-if="type == 'success'">
+          <a-icon type="info-circle" />
+        </a-row>
+      </a-alert>
       <a-icon type="close" style="position:absolute;right:16px;top:13px;" @click="cancel"/>
     </a-modal>
   </div>
@@ -50,6 +57,16 @@ export default {
     cancel() {
       this.visible = false
       this.alertVisible = false
+    }
+  },
+  filters:{
+    formatType:function(type){
+      console.log(type)
+     if(type == "success"){
+        return `info`
+      }else{
+        return type
+      }
     }
   }
 }

@@ -1,13 +1,9 @@
 <template>
 	<div class="navBox">
 		<div class="navSearch">
-			 <a-card title="" :bordered="false" style="width: 100%;"  :bodyStyle="{'display':'flex','justify-content':'space-between'}">
-			   <a-row class="leftDiv">
-			       <!-- 审核状态 -->
-			       <a-col style="display:flex;align-items:center;" :span="8">
-			       <span class="textWidth4">案例名称</span>
-			         <a-input defaultValue style="width:calc(100% - 97px);margin-left:16px;" allowClear  v-model="domeName" placeholder="请输入案例名称"></a-input>
-			       </a-col>
+			 <a-card title="" :bordered="false" style="width: 100%;"  :bodyStyle="{'display':'flex','justify-content':'space-between'}" class="statementQuery">
+			   <a-row class="formStyle" style="width: 100%;" type="flex" justify="space-between">
+			     <a-row class="leftDiv">
 			       <!-- 账号 -->
 			        <a-col style="display:flex;align-items:center;" :span="8">
 			        <span class="textWidth4">案例类型</span>
@@ -17,6 +13,11 @@
 			           </a-select-option>
 			          <a-select-option :value="item.id" v-for="(item,index) in domeTypeS" :key="index">{{item.dataName}}</a-select-option>
 			        </a-select>
+			       </a-col>
+				   <!-- 审核状态 -->
+			       <a-col style="display:flex;align-items:center;" :span="8">
+			       <span class="textWidth4">案例名称</span>
+			         <a-input defaultValue style="width:calc(100% - 97px);margin-left:16px;" allowClear  v-model="domeName" placeholder="请输入案例名称"></a-input>
 			       </a-col>
 			       <!-- 发布平台 -->
 			       <a-col style="display:flex;align-items:center;" :span="8">
@@ -28,12 +29,13 @@
 			         <a-select-option :value="item.id" v-for="(item,index) in branchS" :key="index">{{item.departmentName}}</a-select-option>
 			       </a-select>
 			       </a-col>
-			   </a-row>
-				    <div class="btnCol" style="width:170px;">
+			      </a-row>
+				    <div class="btnCol" style="width:90px;">
 						   <a-button @click="onSearch" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
 					</div>
+				</a-row>
 			   <!-- <a-row style="position: absolute;bottom:16px;right: 23px;">
 			        <a-button
 			         type="primary"
@@ -57,6 +59,7 @@
 			      :pagination="ipagination"
 			      :loading="loading"
 			      @change="handleTableChange"
+				  :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
 			    >
 
 			      <span slot="title2" slot-scope="text, record">

@@ -1,15 +1,16 @@
 <template>
 	<div class="navBox">
 		<!-- <div class="navSearch"> -->
-			<a-card :bodyStyle="{'display':'flex','justify-content':'space-between'}">
+			<a-card :bodyStyle="{'display':'flex','justify-content':'space-between'}" class="statementQuery">
 			 <!-- <a-input-search
 			 v-model="findBy"
 			 placeholder="请输入关键字搜索"
 			 :maxLength="50"
 			 enter-button @search="onSearch" /> -->
+			  <a-row class="formStyle" style="width: 100%;" type="flex" justify="space-between">
 			   <a-row class="leftDiv"> 
 				  <a-col style="display:flex;align-items:center;" :span="8">
-					<span class="textWidth2">部门</span>
+					<span class="textWidth4" style="text-align:right;">部门</span>
 					<!-- 目前部门就一个，使用输入框 -->
 					<!-- <a-input :disabled="true" v-model="branchA"  style="color:#55565D;width:calc(100% - 97px);margin-left: 16px;"></a-input> -->
 					<div style="color:#55565D;width:calc(100% - 97px);margin-left: 16px;border-radius: 4px; line-height:30px;
@@ -23,7 +24,7 @@
 					</a-select> -->
 					</a-col>
 				   <!-- 账号 -->
-					<a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+					<a-col style="display:flex;align-items:center;" :span="8">
 						<span class="textWidth4">案例类型</span>
 				   <a-select  style="width:calc(100% - 97px);margin-left:16px;"  @change="changeOne"  allowClear  placeholder="请选择案例类型" :showSearch="true" :filter-option="filterOption" >
 				     <a-select-option value >
@@ -33,21 +34,22 @@
 				   </a-select>
 				   </a-col>
 				   <!-- 发布平台 -->
-				 <a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+				 <a-col style="display:flex;align-items:center;" :span="8">
 				   <span class="textWidth4">案例名称</span>
 				   <a-input  style="width:calc(100% - 97px);margin-left:16px;" allowClear  v-model="caseName" placeholder="请输入案例名称"></a-input>
 				 </a-col>
 			   </a-row>
-					<div class="btnCol" style="width:170px;">
-					<a-button @click="onSearch" type="primary" class="queryBtn">
-						<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
-						查询</a-button>
-					</div>
+				<div class="btnCol" style="width:90px;">
+				<a-button @click="onSearch" type="primary" class="queryBtn">
+					<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
+					查询</a-button>
+				</div>
+			    </a-row>
 			 </a-card>
 		<!-- </div> -->
 		<div class="contS" style="margin-top: 12px;">
 			<a-card title="案例明细表"  :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
-				 <a-button type="primary" @click="openModel" slot="extra" style="padding:0 16px;position:absolute;right:32px;">
+				 <a-button type="primary" @click="openModel" slot="extra" style="padding:0 16px;position:absolute!important;right:0!important;">
 				 	<a-icon type="plus" />新增
 				 </a-button>
 			  <div style="background:#fff;">
@@ -62,6 +64,7 @@
 			      :pagination="ipagination"
 			      :loading="loading"
 			      @change="handleTableChange"
+				  :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
 			    >
 
 			      <span slot="title2" slot-scope="text, record">
@@ -98,8 +101,8 @@
 					style="margin-right: 12px;color:#3264D5"
 					>编辑</a>
 
-					<a-popconfirm v-if="authButton.hasOwnProperty('Delete')&&authButton.Delete"
-					 title="确定删除吗?" @confirm="() => handleRemove(record)">
+					<a-popconfirm v-if="authButton.hasOwnProperty('Delete')&&authButton.Delete" okText="确认" cancelText="取消"
+					 title="确认删除吗?" @confirm="() => handleRemove(record)">
 						<a style="color:#3264D5;margin-right: 12px;">删除</a>
 					</a-popconfirm>
 					<!-- <a
@@ -114,7 +117,7 @@
 
 		</div>
 
-		<a-modal
+		<a-modal :centered="true"
 			  class="ModelMan"
 		      :title="addOrEdit==2?'新增案例':'编辑案例'"
 		      :visible="visible"
@@ -167,7 +170,6 @@
 			 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="发布时间" 
 			   style="margin-top:-6px; width:   320px;float: left;margin-left: 85px;">
 			  	<a-date-picker 
-				:disabledDate="disabledDate"
 				v-decorator="['publishDate', validatorRules.publishDate]" 
 				placeholder="请选择日期" @change="onChangeA" style="margin-right: 15px;width: 200px;margin-left: 10px;"	>
 			  	</a-date-picker>
@@ -226,14 +228,14 @@
 						   :bordered="false"
 						    v-decorator="['pdfUrl', validatorRules.pdfUrl]"
 						 >
-												<div v-if="pdfUrl" style="position: absolute;left: 0;top:0;width:106px;height:106px;background: white;border:1px dotted #DFE0EB;" >
-													<span style="display: inline-block;position: absolute;right: 4px;top: 2px;" @click="confirmC" >
-														<a-popconfirm title="确定删除吗?" @confirm="confirmS" >
-															<a-icon type="close" />
-														</a-popconfirm>
-													</span>
-													<img  src="@/assets/pdF.png" width="55px" height="55px" style="border: none;margin-top: 21px;"/>
-												</div>
+							<div v-if="pdfUrl" style="position: absolute;left: 0;top:0;width:106px;height:106px;background: white;border:1px dotted #DFE0EB;" >
+								<span style="display: inline-block;position: absolute;right: 4px;top: 2px;" @click="confirmC" >
+									<a-popconfirm title="确认删除吗?" @confirm="confirmS" okText="确认" cancelText="取消">
+										<a-icon type="close" />
+									</a-popconfirm>
+								</span>
+								<img  src="@/assets/pdF.png" width="55px" height="55px" style="border: none;margin-top: 21px;"/>
+							</div>
 						   <div v-else>
 							 <a-icon :type="loading ? 'loading' : 'plus'" />
 							 <div class="ant-upload-text" style="marign-top:5px;">
@@ -288,7 +290,6 @@
 	  components:{ tooltip }  ,
 	  data(){
 		  return{
-			  
 			  model: {},//数据存储
 			  labelCol: {
 			    xs: { span: 3 },
@@ -451,6 +452,9 @@
 		  confirmS(e){
 			  e.stopPropagation()
 			  this.deletePic(e)
+			  this.form.setFieldsValue({
+				pdfUrl: "",
+			});
 		  },
 		  changeOne(val){
 		  	console.log(val,'val')
@@ -508,30 +512,31 @@
 
 		  },
 		  onChangeA(date, dateString){//选择时间
-				if (dateString != null) {
-					//选中的时间不能小于当前时间
-					let now = new Date().getTime()
-					let select = new Date(dateString).getTime()
-					if ((now - select) > 0) {
-						this.$refs.tooltip.visible = true
-						this.$refs.tooltip.alertVisible = true
-						this.type='error'
-						this.message = "选择时间应大于当前时间!"
-						let a = document.getElementById(pick)
-						console.log(a)
-						// this.form.resetFields()
-						// this.$nextTick(() => { //form 表单 数据回显
-						// 	this.form.setFieldsValue(
-						// 		pick({}, 'brand','caseType', 'publishDate', 'caseName', 'pdfUrl')
-						// 	)
-						// })
-						setTimeout(()=>{
-						  this.$refs.tooltip.cancel()
-						},3000)
-					}else{
-						this.publishDate = dateString ? dateString : null;
-					}
-				}
+				// if (dateString != null) {
+				// 	//选中的时间不能小于当前时间
+				// 	let now = new Date().getTime()
+				// 	let select = new Date(dateString).getTime()
+				// 	if ((now - select) > 0) {
+				// 		this.$refs.tooltip.visible = true
+				// 		this.$refs.tooltip.alertVisible = true
+				// 		this.type='error'
+				// 		this.message = "选择时间应大于当前时间!"
+				// 		let a = document.getElementById(pick)
+				// 		console.log(a)
+				// 		// this.form.resetFields()
+				// 		// this.$nextTick(() => { //form 表单 数据回显
+				// 		// 	this.form.setFieldsValue(
+				// 		// 		pick({}, 'brand','caseType', 'publishDate', 'caseName', 'pdfUrl')
+				// 		// 	)
+				// 		// })
+				// 		setTimeout(()=>{
+				// 		  this.$refs.tooltip.cancel()
+				// 		},3000)
+				// 	}else{
+				// 		this.publishDate = dateString ? dateString : null;
+				// 	}
+				// }
+				this.publishDate = dateString ? dateString : null;
 		  },
 		  openModel(){//打开对话框
 			  this.visible=true;
@@ -579,7 +584,7 @@
 							addCenter(params).then(res=>{ //添加案例
 								if(res.code === 200) {
 									this.message='添加案例成功'
-									this.type='success'
+									this.type='info'
 									this.$refs.tooltip.visible = true
 									this.$refs.tooltip.alertVisible = true
 									this.disabled = false;
@@ -645,8 +650,7 @@
 							this.disabled = false;
 						}else{
 							this.disabled = false;
-						}
-					   if(accseeV||accsee){
+							 if(accseeV||accsee){
 					   	this.$refs.tooltip.visible = true
 					   	this.$refs.tooltip.alertVisible = true
 					   	this.type='error'
@@ -670,7 +674,7 @@
 					   	updateCent(params).then(res=>{
 					   		if(res.code === 200) {
 					   			this.message='案例修改成功'
-					   			this.type='success'
+					   			this.type='info'
 					   			this.$refs.tooltip.visible = true
 					   			this.$refs.tooltip.alertVisible = true
 								this.disabled = false;
@@ -690,6 +694,7 @@
 					   		}
 					   	})
 					   }
+						}
 				    })
 				
 			
@@ -721,7 +726,7 @@
 					  if (status === 'done') {
 						  pg.value=100;
 						  this.message='上传成功'
-						  this.type='success'
+						  this.type='info'
 						  this.$refs.tooltip.visible = true
 						  this.$refs.tooltip.alertVisible = true
 						  setTimeout(()=>{
@@ -788,7 +793,7 @@
 			  DeleteCenter(params).then(res=>{
 				  if(res.code===200){
 					  this.message='案例删除成功'
-					  this.type='success'
+					  this.type='info'
 					  this.$refs.tooltip.visible = true
 					  this.$refs.tooltip.alertVisible = true
 					  setTimeout(()=>{

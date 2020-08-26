@@ -1,40 +1,52 @@
 <template>
   <div>
     <!-- 顶部查询条件模块 -->
-    <a-card title="" :bordered="false" :hoverable="true" style="margin-bottom: 12px;">
+    <a-card title="" :bordered="false" :hoverable="true" style="margin-bottom: 12px;" class="statementQuery">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
         <a-form layout="inline" @keyup.enter.native="queryBtn">
-          <a-row class="formStyle">
-          <a-row class="leftDiv" style="width: calc(100% - 85px);">
-                  <a-col style="display:flex;align-items:center;padding-right:24px;" :span="5">
-                  <span class="textWidth4" style="white-space: nowrap;">报备日期</span>
-                    <!-- 开始时间选择框 -->
-                      <a-date-picker v-model="startValue" placeholder="请选择开始日期" :disabledDate="disabledStartDate" style="width:calc(100% - 47px)!important;min-width:calc(100% - 47px)!important;margin-left:16px;" @change="stime" @ok="ok1"/>
-                  </a-col>
-                  <a-col  style="display:flex;align-items:center;" :span="4">
-                    <!-- 结束时间选择框 -->
-                      <a-date-picker v-model="endValue" placeholder="请选择结束日期" :disabledDate="disabledEndDate" style="width:calc(100% - 31px);min-width:calc(100% - 31px)!important;margin-left:8px;" @change="etime" @ok="ok2"/>
-                  </a-col> 
-                   <a-col style="display:flex;align-items:center;" :span="5">
-                  <span class="textWidth4" style="white-space: nowrap;">发布日期</span>
-                      <a-date-picker v-model="publishStartValue" placeholder="请选择开始日期" :disabledDate="disabledStartDate2" 
-                      style="width:calc(100% - 73px)!important;margin-left:16px;" 
-                      @change="stime2" @ok="ok3"/>
-                  </a-col>
-                  <a-col  style="display:flex;align-items:center;" :span="4">
-                      <a-date-picker v-model="publishEndValue" placeholder="请选择结束日期" :disabledDate="disabledEndDate2" 
-                      style="width:calc(100% - 31px)!important;margin-left:8px;" 
-                      @change="etime2" @ok="ok4"/>
-                  </a-col>
-                  <a-col style="display:flex;align-items:center;" :span="5">
-                    <span class="textWidth4">发布形式</span>
-                    <a-select style="width:calc(100% - 73px);margin-left:16px;" placeholder="请选择发布形式" @change="selectPublishForm" :showSearch="true" :filter-option="filterOption" allowClear>
-                        <a-select-option value="">全部</a-select-option>
-                        <a-select-option :value="value" v-for="(value,keys,index) in allPublicType" :key="index">{{value}}</a-select-option>
-                    </a-select>
-                  </a-col> 
+          <a-row class="formStyle" type="flex" justify="space-between">
+          <a-row class="leftDiv" style="width: calc(100% - 150px);">
+                    <a-col style="display:flex;align-items:center;" :span="8">
+                      <span class="textWidth4">报备日期</span>
+                      <a-row style="width:calc(100% - 97px);margin-left:16px;">
+                        <a-col class="leftStart" :span="12">
+                            <a-date-picker v-model="startValue" placeholder="开始日期" :disabledDate="disabledStartDate"
+                              class="leftOne" @change="stime" @ok="ok1"/>
+                        </a-col>
+                        <a-col class="leftEnd" :span="12">
+                           <a-date-picker v-model="endValue" placeholder="结束日期" :disabledDate="disabledEndDate"
+                            class="leftOne" @change="etime" @ok="ok2"/>
+                        </a-col>
+                      </a-row>
+                    </a-col>
+
+                    <a-col style="display:flex;align-items:center;" :span="8">
+                      <span class="textWidth4">发布日期</span>
+                      <a-row style="width:calc(100% - 97px);margin-left:16px;">
+                        <a-col class="leftStart" :span="12">
+                              <a-date-picker v-model="publishStartValue" placeholder="开始日期" :disabledDate="disabledStartDate2"
+                              class="leftOne" @change="stime2" @ok="ok3"/>
+                        </a-col>
+                        <a-col class="leftEnd" :span="12">
+                            <a-date-picker v-model="publishEndValue" placeholder="结束日期" :disabledDate="disabledEndDate2"
+                              class="leftOne" @change="etime2" @ok="ok4"/>
+                        </a-col>
+                      </a-row>
+                    </a-col>
+
+                     <a-col style="display:flex;align-items:center;" :span="8">
+                      <span class="textWidth4">发布形式</span>
+                      <a-row style="width:calc(100% - 82px);">
+                        <a-col style="display:flex;align-items:center;" :span="24">
+                           <a-select style="width:100%!important;margin-left:16px;" placeholder="请选择发布形式" @change="selectPublishForm" :showSearch="true" :filter-option="filterOption" allowClear>
+                            <a-select-option value="">全部</a-select-option>
+                            <a-select-option :value="value" v-for="(value,keys,index) in allPublicType" :key="index">{{value}}</a-select-option>
+                           </a-select>
+                        </a-col>
+                      </a-row>
+                    </a-col>
           </a-row>
               <div class="btnCol" style="width:85px;">
                   <a-button @click="queryBtn" type="primary" class="queryBtn">
@@ -43,50 +55,60 @@
                   </a-button>
                 </div>
           </a-row>
-          <a-row v-if="isSpread" class="leftDiv" style="margin-top:16px;display:flex;align-items:center;width: calc(100% - 85px);" >
-                <a-col style="display:flex;align-items:center;" :span="5">
-                <span style="color:transparent;user-select:none;white-space: nowrap;" class="textWidth2">部门</span>
-                <span class="textWidth2" style="white-space: nowrap;">部门</span>
-                  <a-select style="width:calc(100% - 71px)!important;min-width:calc(100% - 71px)!important;margin-left:16px;" placeholder="请选择部门" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment">
-                    <a-select-option value="">全部</a-select-option>
-                    <a-select-option :value="items.id" v-for="(items,indexs) in allDepartment" :key="indexs">{{items.dataName}}</a-select-option>
-                  </a-select> 
+          <a-row v-if="isSpread" class="leftDiv" style="margin-top:16px;display:flex;align-items:center;width: calc(100% - 150px);" >
+             <a-col style="display:flex;align-items:center;" :span="8">
+                <span class="textWidth4" style="text-align:right;">部门</span>
+                <a-row style="width:calc(100% - 97px);margin-left:16px;">
+                  <a-col class="leftStart" :span="12">
+                    <a-select class="leftOne" placeholder="请选择部门" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment">
+                      <a-select-option value="">全部</a-select-option>
+                      <a-select-option :value="items.id" v-for="(items,indexs) in allDepartment" :key="indexs">{{items.dataName}}</a-select-option>
+                    </a-select>
+                  </a-col>
+                  <a-col class="leftEnd" :span="12">
+                    <a-select class="leftOne" placeholder="请选择子部门" v-model="levelTwoDept" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment2">
+                      <a-select-option :value="items.dataName" v-for="(items,indexs) in allDepartment2" :key="indexs">{{items.dataName}}</a-select-option>
+                    </a-select>
+                  </a-col>
+                </a-row>
+              </a-col>
+
+             <a-col style="display:flex;align-items:center;" span="8">
+                <span class="textWidth4">媒体平台</span>
+                <a-row style="width:calc(100% - 97px);margin-left: 16px;">
+                    <a-col class="leftStart" :span="12">
+                      <a-select placeholder="请选择媒体平台"
+                        class="leftOne" :showSearch="true" :filter-option="filterOption" allowClear
+                        @change="changeChannel"
+                      >
+                        <a-select-option value="">全部</a-select-option>
+                        <a-select-option
+                          :value="value.mediaPlatformName"
+                          v-for="(value, key, index) in mediaPlate"
+                          :key="index"
+                        >{{value.mediaPlatformName}}</a-select-option>
+                      </a-select>
+                    </a-col>
+                    <a-col class="leftEnd" :span="12">
+                      <a-input class="leftOne" placeholder="搜索文字" :disabled="!showInput" v-model="queryParam.otherChannelPlatform" allowClear/>
+                    </a-col>
+                  </a-row>
+              </a-col>
+              <a-col style="display:flex;align-items:center;" :span="8">
+                  <span class="textWidth4" style="text-align:right;">品牌</span>
+                  <a-row style="width:calc(100% - 82px);">
+                    <a-col style="display:flex;align-items:center;" :span="24">
+                      <a-select placeholder="请选择品牌" style="width:100%!important;margin-left:16px;" @change="selectBrand" :showSearch="true" :filter-option="filterOption" allowClear>
+                        <a-select-option value="">全部</a-select-option>
+                        <a-select-option :value="value" v-for="(value,keys,index) in allBrand" :key="index">{{value}}</a-select-option>
+                      </a-select>
+                    </a-col>
+                  </a-row>
                 </a-col>
-                 <a-col style="display:flex;align-items:center;" :span="4">
-                  <a-select style="width:calc(100% - 31px);min-width:calc(100% - 31px)!important;margin-left:8px;" placeholder="请选择子部门" v-model="levelTwoDept" :showSearch="true" :filter-option="filterOption" allowClear @change="changeDepartment2">
-                    <a-select-option :value="items.dataName" v-for="(items,indexs) in allDepartment2" :key="indexs">{{items.dataName}}</a-select-option>
-                </a-select>
-            </a-col>
-         
-            <a-col style="display:flex;align-items:center;" :span="5">
-            <span class="textWidth4">媒体平台</span>
-              <a-select placeholder="请选择媒体平台"
-                style="width: calc(100% - 73px);margin-left:16px;" :showSearch="true" :filter-option="filterOption" allowClear
-                @change="changeChannel"
-              >
-                <a-select-option value="">全部</a-select-option>
-                <a-select-option
-                  :value="value.mediaPlatformName"
-                  v-for="(value, key, index) in mediaPlate"
-                  :key="index"
-                >{{value.mediaPlatformName}}</a-select-option>
-              </a-select>
-             </a-col>
-              <a-col style="display:flex;align-items:center;position:relative;" :span="4" v-if="showInput">
-                <a-input placeholder="请输入搜索文字" :style="{'width': 'calc(100% - 23px)','padding-left':'8px'}" v-model="queryParam.otherChannelPlatform" allowClear/>
-             </a-col>
-          
-            <a-col style="display:flex;align-items:center;" :span="5"> 
-            <span class="textWidth4" style="text-align:right;">品牌</span>
-                <a-select placeholder="请选择品牌" style="width:calc(100% - 73px);margin-left:16px;" @change="selectBrand" :showSearch="true" :filter-option="filterOption" allowClear>
-                  <a-select-option value="">全部</a-select-option>
-                  <a-select-option :value="value" v-for="(value,keys,index) in allBrand" :key="index">{{value}}</a-select-option>
-              </a-select>
-              </a-col> 
           </a-row>
            <!-- 展开/收起按钮 -->
           <div class="outerText" :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
-            <span @click="isSpread = !isSpread" style="cursor: pointer;">
+            <span @click="toggle" style="cursor: pointer;">
               <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
               <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
             </span>
@@ -101,18 +123,19 @@
             v-if="authButton.hasOwnProperty('exportBtn')&&authButton.exportBtn"
             type="primary"
             icon="download"
-            style="padding:0 16px;position:absolute;right:32px;"
+            style="padding:0 16px;position:absolute;right:0;"
             @click="handleExportXls('报备统计明细表')"
+            :disabled="ExportXls"
           >导出</a-button>
       <a-row>
         <a-col :md="24">
           <a-table
-            style="height:500px;margin:0;"
+            style="margin:0;"
             ref="table"
             size="small"
             :bordered="bordered"
             rowKey="id"
-            :scroll="{scrollToFirstRowOnChange:true}"
+            :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
             :columns="columns"
             :dataSource="dataSource"
             :pagination="ipagination"
@@ -135,6 +158,10 @@
               <a v-if="authButton.hasOwnProperty('reviewBtn')&&authButton.reviewBtn" @click="review(record)" style="color:#3264D5;margin-right:12px;">详情</a>
               <!-- <a-divider v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" type="vertical" /> -->
               <a v-if="authButton.hasOwnProperty('editBtn')&&authButton.editBtn" @click="edit(record)" style="color:#3264D5">编辑</a>
+              <a-popconfirm ok-text="确认" cancel-text="取消"
+                   title="确认删除吗?" @confirm="() => handleDelete(record.templateId)">
+                <a style="color:#3264D5;margin-left:12px;">删除</a>
+              </a-popconfirm>
             </span>
           </a-table>
         </a-col>
@@ -159,7 +186,7 @@
               ></a-input>
             </a-col>
             <!-- 发布账号： -->
-            <a-col :span="4" class="col-3" v-if="showChannelName">账号名称：</a-col>
+            <a-col :span="4" class="col-3" v-if="showChannelName">账号：</a-col>
             <a-col :span="5" v-if="showChannelName">
               <a-input
                 :readOnly="true"
@@ -176,7 +203,7 @@
                 <a-input :readOnly="true" class="inputBg" placeholder="" v-model="otherPlateformName"></a-input>
               </a-col>
               <!-- 其他渠道名称： -->
-              <a-col :span="4" class="col-3">账号名称：</a-col>
+              <a-col :span="4" class="col-3">账号：</a-col>
               <a-col :span="5">
                 <a-input :readOnly="true" class="inputBg" placeholder="" v-model="otherChilnelName"></a-input>
               </a-col>
@@ -272,7 +299,7 @@
               <a-input
                 :readOnly="true"
                 type="textarea"
-                style="width:97%!important;color:#55565D;background:#F5F5F5;"
+                style="width:97%!important;color:#55565D;background:#F5F5F5;border: 1px solid #d9d9d9;box-shadow: none;"
                 placeholder="内容标题"
                 v-model="reviewData.completeTitle"
                 :autosize="autoSize2"
@@ -286,7 +313,7 @@
             <a-col :span="15">
               <a-input
                 :readOnly="true"
-                style="width:97%!important;color:#55565D;background:#F5F5F5;"
+                style="text-align: justify;width:97%!important;color:#55565D;background:#F5F5F5;border: 1px solid #d9d9d9;box-shadow: none;"
                 type="textarea"
                 placeholder="文本内容"
                 v-model="reviewData.contentProfile"
@@ -361,7 +388,7 @@
             <a-col :span="15">
               <a-input
                 :readOnly="true"
-                style="width:97%!important;color:#55565D;background:#F5F5F5;"
+                style="width:97%!important;color:#55565D;background:#F5F5F5;border: 1px solid #d9d9d9;box-shadow: none;"
                 placeholder="原文链接"
                 v-model="reviewData.sourceUrl"
               ></a-input>
@@ -370,10 +397,14 @@
           </a-row>
         </a-col>
       </a-row>
+      <a-row type="flex" justify="center">
+        <a-button @click="preList" style="width:108px;height:36px;margin:0 10px;" type="primary">上一条</a-button>
+        <a-button @click="nextList" style="width:108px;height:36px;margin:0 10px;" type="primary">下一条</a-button>
+      </a-row>
     </a-modal>
     <report-edit-modal :allDepartment="allDepartment" :allBrand="allBrand" :allPublicType="allPublicType" ref="reportEditModal" @ok="modalFormOk"></report-edit-modal>
      <!-- 图片预览弹窗 -->
-  <a-modal
+    <a-modal
       width="800px"
       title="图片预览"
       :keyboard="true"
@@ -385,6 +416,7 @@
     </a-modal>
     <!-- 提示弹窗 -->
     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
+    <exportTip ref="exportTip"></exportTip>
   </div>
 </template>
 <script>
@@ -394,6 +426,7 @@ import { USER_AUTH } from "@/store/mutation-types"
 import ReportEditModal from './modules/ReportEdit'
 import { baseUrl } from '@/api/manage'
 import tooltip from "@/components/tooltip/tooltip.vue"
+import exportTip from "@/components/tooltip/exportTip.vue"
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import {
   channelList,
@@ -403,10 +436,11 @@ import {
   reportList //条件查询
 } from '@/api/api'
 import moment from 'moment'
+import { postAction } from '@/api/manage'
 export default {
   name: 'Detail',
   mixins: [JeecgListMixin],
-  components: { ReportEditModal,tooltip },
+  components: { ReportEditModal,tooltip,exportTip },
   data() {
     return {
       publishStartValue:null,
@@ -425,6 +459,7 @@ export default {
         editBtn: true,
         reviewBtn: true,
         exportBtn: true,
+        // deleteBtn: true,
       },
       selectDept2:'',
       selectDept:'',
@@ -488,17 +523,6 @@ export default {
       brand:'',
       //表头
        columns: [
-//          {
-//           title: '序号', 
-//           align:"center",
-//           className:'table_title',
-//           width:80,
-//           customRender:(text,record,index)=> {
-//           return(
-//           `${(this.ipagination.current-1)*(this.ipagination.pageSize)+(index+1)}`//当前页数减1乘以每一页页数再加当前页序号+1
-//           )
-//           }
-//         },
          {
           title: '报备日期',
           align: 'center',
@@ -559,7 +583,7 @@ export default {
           title: 'kol',
           dataIndex: 'isQol',
           align: 'center',
-          width: 30,
+          width: 45,
           className:'table_title'
         },
         {
@@ -581,7 +605,7 @@ export default {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
-          width: 100,
+          width: 130,
           // fixed:'right',
           scopedSlots: { customRender: 'action' },
           className:'table_title'
@@ -590,12 +614,17 @@ export default {
       dataSource: [],
       url: {
         list: '/cms/content/report/list', //查询列表接口
-        exportXlsUrl: '/cms/content/report/exportExcel' //导出列表接口
+        exportXlsUrl: '/cms/content/report/exportExcel', //导出列表接口
+        delete: '/cms/content/report/delete'
       },
       downloadUrl: baseUrl + '/cms/content/report/exportExcel',
       visibleImg:false,
       preImgUrl:'',
-      showWhichImg:-99
+      showWhichImg:-99,
+      ExportXls:false,//是否禁用导出按钮
+      tabIndexByTable:0,
+      isLastList:false,
+      isFirstPage:true
     }
   },
   created() {
@@ -684,7 +713,7 @@ export default {
     // 获取媒体平台下拉选数据
     getPublishChinnel() {
       // type:1 编辑者；type:2 审核者
-      channelList({userCode:Vue.ls.get(USER_INFO)['userAccount'],type:'1'}).then(res => {
+      channelList({userCode:Vue.ls.get(USER_INFO)['userAccount'],type:'2'}).then(res => {
         if (res.code === 200) {
           this.mediaPlate = res.data
           // 在本地向媒体平台数组中添加一条数据-->  '其它媒体平台'
@@ -961,7 +990,11 @@ export default {
     },
     //查看
     review(record) {
-      console.log(record)
+      this.tabIndexByTable = record.tabIndexByTable - 1;
+      this.visible = true;//打开详情弹窗
+      this.lookData(record);
+    },
+    lookData(record){
       // 判断其他平台名称是否有值
       if(record.channelId === '-1' || record.channelId === '-2'){
         this.hasOther = true
@@ -976,8 +1009,6 @@ export default {
 
       this.lookBq = record.isQol==="是" ? '是' : record.isQol==="否" ? "否" : ''
       this.lookQol = record.hasCopyRight==="是" ? '是' : record.hasCopyRight==="否" ? "否" : ''
-
-      this.visible = true
       this.reviewData = { ...record }
       this.reviewData['publishDate'] = moment(new Date(this.reviewData['publishDate'])).format('YYYY-MM-DD')
       this.reviewData['completeTitle'] = record.completeTitle?record.completeTitle:record.titles
@@ -1041,6 +1072,89 @@ export default {
         this.reviewData['mediaPath'] = []
       }
     },
+    loadData(arg) {
+      console.log("页面内")
+      if (!this.url.list) {
+        // this.$message.error("请设置url.list属性!")
+        this.message = "请设置url.list属性!"
+        this.type = "error"
+        this.warnMethod()
+        return
+      }
+      //加载数据 若传入参数1则加载第一页的内容
+      if (arg === 1) {
+        this.ipagination.current = 1;
+      }
+      var params = this.getQueryParams();//查询条件
+      this.loading = true;
+      postAction(this.url.list, params).then((res) => {
+        if (res.code === 200) {
+          this.dataSource = res.data.list ? res.data.list : res.data;
+          this.isFirstPage = res.data.isFirstPage;
+          this.isLastPage = res.data.isLastPage;
+          this.tabIndexByTable = 0;
+          this.lookData(this.dataSource[0])
+          if (res.data.unRead !== undefined) {
+            this.unRead = res.data.unRead
+          }
+          if (res.data.totalAnnouncement !== undefined) {
+            this.totalAnnouncement = res.data.totalAnnouncement
+          }
+          if (res.data.countAlreadyRead !== undefined) {
+            this.countAlreadyRead = res.data.countAlreadyRead
+          }
+          this.dataSource.forEach((val, index) => {
+            val.tabIndexByTable = index + 1;
+          })
+          this.ipagination.total = res.data.total;
+        }
+        if (res.code !== 200 && res.code !== 400) {
+          // this.$message.warning(res.message)
+          this.message = res.message
+          this.type = "error"
+          this.warnMethod()
+        }
+        this.loading = false;
+      })
+    },
+    // 查看下一条
+    nextList(){
+      // 如果当前条数已经是最后一条了，判断是不是最后一页，如果不是最后一页则请求下一页数据，反之给用户提示
+      if(this.tabIndexByTable >= this.dataSource.length - 1){
+        // 如果不是最后一页，查询下一页数据
+        if(!this.isLastPage){
+          this.ipagination.current++;
+          this.loadData();
+        }else{
+          // 如果是最后一页，给用户提示
+          this.message = "当前报备已经是最后一条，请点击上一条按钮查看其他报备详情"
+          this.type = "success"
+          this.warnMethod();
+        }
+      }else{
+        this.tabIndexByTable++;
+        this.lookData(this.dataSource[this.tabIndexByTable])
+      }
+    },
+    // 查看上一条
+    preList(){
+       // 如果当前条数已经是第一条了，判断是不是第一页，如果不是第一页则请求上一页数据，反之给用户提示
+      if(this.tabIndexByTable <= 0){
+        // 如果不是第一页，查询上一页数据
+        if(!this.isFirstPage){
+          this.ipagination.current--;
+          this.loadData();
+        }else{
+          // 如果是第一页，给用户提示
+          this.message = "当前报备已经是第一条，请点击下一条按钮查看其他报备详情"
+          this.type = "success"
+          this.warnMethod();
+        }
+      }else{
+        this.tabIndexByTable--;
+        this.lookData(this.dataSource[this.tabIndexByTable])
+      }
+    },
     //编辑
     edit(record) {
       console.log("item",record)
@@ -1056,6 +1170,13 @@ export default {
       document.body.appendChild(a)
       a.click() // 自执行点击事件
       document.body.removeChild(a)
+    },
+    warnMethod() {
+      this.$refs.tooltip.visible = true
+      this.$refs.tooltip.alertVisible = true
+      setTimeout(() => {
+        this.$refs.tooltip.cancel()
+      }, 3000)
     }
   }
 }
@@ -1098,5 +1219,16 @@ export default {
  width:100%!important;
  color:#55565D;
  background:#F5F5F5;
+ border: 1px solid #d9d9d9;box-shadow: none;
+}
+.leftStart{
+  display: flex; justify-content: flex-start;
+}
+.leftEnd{
+  display: flex; justify-content: flex-end;
+}
+.leftOne{
+  width:calc(100% - 4px)!important;
+  min-width:calc(100% - 4px)!important;
 }
 </style>

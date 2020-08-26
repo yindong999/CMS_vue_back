@@ -1,11 +1,11 @@
 <template>
   <div>
-    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;">
+    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;" class="statementQuery">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
         <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row class="formStyle">
+          <a-row class="formStyle" type="flex" justify="space-between">
           <a-row class="leftDiv">
             <a-col style="display:flex;align-items:center;" :span="8">
                <span class="textWidth4">用户账号</span>
@@ -33,7 +33,7 @@
                   </a-select>
             </a-col>
           </a-row>
-            <div class="btnCol" style="width:170px;"> 
+            <div class="btnCol" style="width:90px;"> 
                 <a-button @click="searchQuery" type="primary" class="queryBtn">
                   <img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
                   <span>查询</span>
@@ -66,7 +66,7 @@
           </a-row>
            <!-- 展开/收起按钮 -->
           <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':!isSpread?'16px':'0'}">
-            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+            <span @click="toggle" style="cursor:pointer;">
               <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
               <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
             </span>
@@ -82,11 +82,10 @@
           @click="handleAdd"
           type="primary"
           icon="plus"
-          style="padding:0 16px;position:absolute;right:32px;"
+          style="padding:0 16px;position:absolute;right:0;"
         >新增</a-button>
       <div >
         <a-table
-          style="height:500px"
           ref="table"
           size="small"
           :bordered="bordered"
@@ -95,6 +94,7 @@
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
+          :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
           @change="handleTableChange"
         >
           <!-- :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}" -->

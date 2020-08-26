@@ -3,11 +3,11 @@
     <!-- 顶部查询条件模块 -->
     <div style="background:#ECECEC; margin-bottom:12px">
       <!-- <a-card title="" :bordered="false" style="width: 100%;" :bodyStyle="{'display':'flex','justify-content':'space-between'}"> -->
-      <a-card title="" :bordered="false" style="width: 100%;">
-         <a-row class="formStyle">
+      <a-card title="" :bordered="false" style="width: 100%;" class="statementQuery">
+        <a-row class="formStyle" type="flex" justify="space-between">
 		<a-row class="leftDiv">
             <!-- 媒体平台 -->
-            <a-col style="display:flex;align-items:center;" :span="8">
+        	<a-col style="display:flex;align-items:center;" :span="8">
 			  <span class="textWidth4">媒体平台</span>
 			    <a-select  style="width:calc(100% - 97px);margin-left:16px;" allowClear @change="mediaPlatformChange"
 					placeholder="请选择媒体平台" :showSearch="true" :filter-option="filterOption">
@@ -17,7 +17,7 @@
             </a-col>
             <!-- 账号 -->
              <a-col style="display:flex;align-items:center;" :span="8">
-			  <span class="textWidth2">账号</span>
+			  <span class="textWidth4" style="text-align:right;">账号</span>
 			  <!-- v-model="channelChangeC"  -->
               <a-select  style="width:calc(100% - 97px);margin-left:16px;" allowClear @change="channelChange"
 			  	 v-model="channelChangeC" placeholder="请选择发布渠道" :showSearch="true" :filter-option="filterOption">
@@ -26,9 +26,9 @@
             </a-select>
             </a-col>
             <!-- 发布平台 -->
-            <a-col style="display:flex;align-items:center;position:relative;left:-28px;" :span="8">
+            <a-col style="display:flex;align-items:center;" :span="8">
 			  <span class="textWidth4">发布部门</span>
-              <a-select  style="width:calc(100% - 97px);margin-left:16px;" @change="mediaChange" allowClear  placeholder="请选择发布人部门" :showSearch="true" :filter-option="filterOption">
+              <a-select  style="width:calc(100% - 97px);margin-left:16px;" @change="mediaChange" allowClear  placeholder="请选择发布部门" :showSearch="true" :filter-option="filterOption">
               <a-select-option value>
                全部
               </a-select-option>
@@ -36,7 +36,7 @@
             </a-select>
             </a-col>
         </a-row>
-			<div class="btnCol"  style="width:170px;">
+			<div class="btnCol"  style="width:90px;">
 				<a-button @click="search" type="primary" class="queryBtn">
 					<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 					查询</a-button>
@@ -48,7 +48,7 @@
         	      <a-input defaultValue style="width:calc(100% - 73px);margin-left:16px;" allowClear  v-model="ContTile" placeholder="请输入内容标题"></a-input>
               </a-col>
 			<a-col style="display:flex;align-items:center;" :span="8">
-			  <span class="textWidth2">状态</span>
+			  <span class="textWidth4" style="text-align:right;">状态</span>
 			    <a-select  style="width:calc(100% - 97px);margin-left:16px;"  defaultValue="4" @change="stateChange"
 					placeholder="请选择状态" :showSearch="true" :filter-option="filterOption">
              		<a-select-option :value="item.value" v-for="(item,index) in ContentStatus" :key="index" v-show="item.value!='0'">{{item.label}}</a-select-option>
@@ -57,7 +57,7 @@
             </a-row>
            <!-- 展开/收起按钮 -->
           <div class="outerText"  :style="{'display': 'flex','justify-content': 'center','margin': '0 auto','margin-top':'16px'}">
-            <span @click="isSpread = !isSpread" style="cursor:pointer;">
+            <span @click="toggle" style="cursor:pointer;">
               <span class="spreadText">{{isSpread?'收起':'展开'}}</span>
               <a-icon :type="!isSpread?'down':'up'" class="downUp" style="color:#3264D5;"/>
             </span>
@@ -78,8 +78,9 @@
 		  slot="extra"
 		  type="primary"
 		  icon="download"
-		  style="padding:0 16px;position:absolute;right:32px;"
+		  style="padding:0 16px;position:absolute;right:0;"
 		  @click="handleExportXls('内容统计明细表')"
+		  :disabled="ExportXls"
 		>导出</a-button>
       <div style="background:#fff;">
         <a-table
@@ -92,6 +93,7 @@
           :pagination="ipagination"
           :loading="loading"
           @change="handleTableChange"
+		  :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
         >
 
           <!-- <span slot="publishTime" slot-scope="text, record">
@@ -153,7 +155,7 @@
      :visible="listViewVisible"
      @ok="listViewOk"
      @cancel="listViewCancel"
-     width="1200px">
+     width="1210px">
     	<p class="contentBy" style="">内容详情</p>
     	<a-row :gutter="50" type="flex" style=" min-height:500px;margin-top:50px">
     		<!-- 内容预览模块 -->
@@ -244,7 +246,7 @@
     				</a-timeline-item>
     			</a-timeline>
     			</a-row>
-				<div  v-show="Reject" style="width: 704px;margin-top: -18px;">
+				<div  v-show="Reject" style="width: 704px;margin-top: -12px;">
 					<div style="width: 704px;height: 104px;background: #F7F7FB ; padding:0 28px 0 16px">
 						<p style="font-size: 14px;font-weight: 500;color: #3C3D43;padding-top: 16px;clear: both;">{{curNodeStates?"驳回原因:":"发布失败原因:"}}</p>
 						<p style="font-size: 12px;color: #767885;margin-top:-8px;">{{curNodeStates?reason:publishReason}}</p>
@@ -289,8 +291,8 @@
     		</a-col>
     	</a-row>
     </a-modal>
-	<a-modal title="内容详情" v-model="modalVisible" :footer="null" :zIndex="1500" width="400px" height="640px">
-		<div style="height:510px;overflow-y: auto;overflow-x: hidden;padding: 0;">
+	<a-modal :centered="true" title="内容详情" v-model="modalVisible" :footer="null" :zIndex="1500" width="400px">
+		<div style="height:460px;overflow-y: auto;overflow-x: hidden;padding: 0;">
 			<p style="margin-right: 14px;font-weight: 500;font-size: 20px;color: #323233;">{{ itemDetail.title }}</p>
 			<p>
 				<span style="color:rgb(87,107,149);margin-right:15px;">{{ itemDetail.channelName }}</span>
@@ -303,6 +305,7 @@
 		</div>
 	</a-modal>
 	<tooltip ref="tooltip" :message="message" :type="type"></tooltip>
+	<exportTip ref="exportTip"></exportTip> 
   </div>
 </template>
 <script>
@@ -312,9 +315,10 @@ import { filterMediaPlatform } from '@/utils/util.js';
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { dataDictionary, contentManage, auditDetail, postByAlist ,thirdPublishChannelList,departmentList,ContentStatusData,channelList,contentDepartment} from '@/api/api'
 import tooltip from "@/components/tooltip/tooltip.vue"
+import exportTip from "@/components/tooltip/exportTip.vue"
 export default {
   mixins: [JeecgListMixin],
-   components:{ tooltip }  ,
+   components:{ tooltip,exportTip }  ,
   data() {
     return {
 	  publishReason:'', // 发布失败原因
@@ -544,11 +548,12 @@ export default {
 	  trueOfFalse:null,
 	  mediaPlate: [], // 媒体平台下拉选数据
 	  channelParams:{
-		type:1,
+		type:2, //2是审核者类型
 		usercode:null,
 		// channel_platform:'sinaBlog'  , wechat
 		channel_platform:''
-	}
+	},
+	ExportXls:false,//是否禁用导出按钮
     }
   },
   created() {
@@ -575,7 +580,7 @@ export default {
 	this.getAll()
 	document.onkeydown = this.keydown;
 	   // 获取媒体平台下拉选数据
-    // this.getMediaPlatform()
+	// this.getMediaPlatform()
   },
   methods: {
 	//  获取发布渠道
@@ -694,14 +699,15 @@ export default {
 	// 媒体平台下拉选改变后触发
 	mediaPlatformChange(val){
 		console.log('val:',val)
-		if(val===''){
-		var allMedia = []
-		this.mediaPlate.map(item=>{
-			allMedia = allMedia.concat(item.channelInfoList)
-		})
-		this.channel = allMedia
-		this.queryParam.channelPlatformCode = ''
-		}else if(val===undefined){
+		// if(){
+		// var allMedia = []
+		// this.mediaPlate.map(item=>{
+		// 	allMedia = allMedia.concat(item.channelInfoList)
+		// })
+		// this.channel = allMedia
+		// this.queryParam.channelPlatformCode = ''
+		// }else
+		if(val===''||val===undefined){
 			this.queryParam.channelPlatformCode = ''
 			this.channel = []
 			var allMedia2 = []
@@ -710,6 +716,7 @@ export default {
 			})
 			this.channel = allMedia2
 		}else{
+			this.channel = []
 			var newArr = this.mediaPlate.filter(item=>{
 				return item.mediaPlatformCode === val
 			})
@@ -736,17 +743,18 @@ export default {
 			processid: processId,
 			templateId: id
 		}
-		this.dataSourceSmall=[];
+    //清空数据一定要放在异步查询里面，防止连续点击按钮触发出多条同样的数据来
+		// this.dataSourceSmall=[];
 		auditDetail(params).then(res => {
 			console.log("res:", res)
 			if (res.code === 200) {
 				this.trueOfFalse = res.data.isSingleChannelPublish;
-				this.statusOfGit = res.data.auditStatus/1;
+				this.statusOfGit = res.data.publishStatus/1;
 				console.log(this.statusOfGit,'this.statusOfGit')
 				this.listViewDetails = res.data
         //详情发布状态
         this.ContentStatus.forEach(item=>{
-          if(item['value'] == res.data.auditStatus){
+          if(item['value'] == res.data.publishStatus){
             this.listViewDetails['showStatus'] = item['label']
           }
         })
@@ -760,6 +768,7 @@ export default {
 					this.reason = ""
 				}
 				console.log('last------;',last)
+        this.dataSourceSmall=[];
 				last.forEach((vat,index)=>{
 					let data = {
 					  key:index,
@@ -859,6 +868,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 	th.table_title {
 		background-color: #F7F7FB !important;
 	}

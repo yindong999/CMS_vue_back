@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :centered="true"
     :title="title"
     :width="800"
     :visible="visible"
@@ -8,7 +8,7 @@
     cancelText="关闭"
     :bodyStyle="bodyStyle"
     wrapClassName="ant-modal-cust-warp"
-    style="top:5%;overflow-y: hidden">
+    >
     <!-- 弹窗底部按钮 -->
     <template slot="footer">
 				<div :style="{ textAlign: 'center',padding:'14px 16px'  }">

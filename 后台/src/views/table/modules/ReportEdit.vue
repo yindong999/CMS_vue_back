@@ -29,7 +29,7 @@
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" :value="publicChannel"></a-input>
               </a-col>
               <!-- 发布账号： -->
-              <a-col :span="4" v-if="showChannelName" class="col-3"><span class="red">*</span>账号名称：</a-col>
+              <a-col :span="4" v-if="showChannelName" class="col-3"><span class="red">*</span>账号：</a-col>
               <a-col :span="5" v-if="showChannelName">
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" :value="publicAccount"></a-input>
               </a-col>
@@ -41,7 +41,7 @@
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" v-model="otherPlateformName"></a-input>
               </a-col>
               <!-- 其他渠道名称： -->
-              <a-col :span="4" class="col-3">账号名称：</a-col>
+              <a-col :span="4" class="col-3">账号：</a-col>
               <a-col :span="5">
                 <a-input disabled style="width:100%!important;color:#55565D;" placeholder="" v-model="otherChilnelName"></a-input>
               </a-col>
@@ -155,12 +155,14 @@
                         <a-icon type="plus" />
                         <div class="ant-upload-text">上传图片</div>
                       </div>
-                    </a-upload>
+                    </a-upload> 
+                    <!--  @mouseleave="showWhichImg=-99" -->
                     <span v-for="(item,index) in imageSrc" :key="index" class="img_vedio" @mouseover="mouseoverImg(index)" @mouseleave="showWhichImg=-99">
                       <img style="width: 88px;height: 88px;border-radius:4px;" :src="item"  alt="">
-                       <div v-if="showWhichImg===index" style="width:88px;height:88px;background:rgba(0,0,0,0.6);border-radius:4px;position:absolute;display:flex;align-items:center;justify-content:center;">
+                       <div @mouseover="mouseoverImg(index)"  v-if="showWhichImg===index" style="width:88px;height:88px;background:rgba(0,0,0,0.6);border-radius:4px;position:absolute;display:flex;align-items:center;justify-content:center;">
                         <img style="width: 16px;height: 12px;margin-right:12px;cursor:pointer;" src="@/assets/lookDetails.png" @click="lookDetailImg(index)" alt="">
-                        <img style="width: 14px;height: 15px;cursor:pointer;" src="@/assets/deleteOne.png" @click="deleteImage(index)" alt="">
+                          <!-- <img style="width: 14px;height: 15px;cursor:pointer;" src="@/assets/deleteOne.png" @click="deleteImage(index)" alt=""> -->
+                          <img style="width: 14px;height: 15px;cursor:pointer;" src="@/assets/deleteOne.png" @click="showConfirm(index,1)" alt="">
                       </div>
                       <!-- <a-icon type="close-circle" @click="deleteImage(index)" style="position: absolute;right: -8px;top: -8px;cursor: pointer" :style="{ fontSize: '18px'}"/> -->
                     </span>
@@ -194,7 +196,7 @@
                     </a-upload>
                     <span v-for="(item,index) in videoSrc" :key="index" class="img_vedio">
                       <video style="width: 88px;height: 88px;border-radius:4px;" :src="item" controls = "true"></video>
-                      <a-icon type="close-circle" @click="deleteVidoe(index)" style="position: absolute;right: -8px;top: -8px;cursor: pointer" :style="{ fontSize: '18px'}"/>
+                      <a-icon type="close-circle" @click="showConfirm(index,2)" style="position: absolute;right: -8px;top: -8px;cursor: pointer" :style="{ fontSize: '18px'}"/>
                     </span>
                     <!--<video style="width: 100px;height: 100px;margin: 10px 10px 0 0" v-for="(item,index) in videoSrc" :src="item" :key="index" controls = "true"></video>-->
 
@@ -228,6 +230,19 @@
     </a-modal>
     <!-- 提示弹窗 -->
     <tooltip ref="tooltip" :message="message" :type="type"></tooltip>
+      <a-modal v-model="visibleWarn" title="提示" >
+      <template slot="footer">
+        <div :style="{ textAlign: 'center',padding:'14px 16px'  }">
+          <a-config-provider :auto-insert-space-in-button="false">
+            <a-button type="primary"  @click="sureDelete" :disabled="btnDisabled2" class="affirmBtn">确认</a-button>
+          </a-config-provider>
+          <a-config-provider :auto-insert-space-in-button="false">
+            <a-button @click="cancleDelete" class="abolishBtn">取消</a-button>
+          </a-config-provider>
+        </div>
+      </template>
+      <p style="text-align:center;">{{titleDelete}}</p>
+    </a-modal>
     </div>
 </template>
 
@@ -244,7 +259,12 @@
     name: "ReportEditModal",
     components: { tooltip },
     data () {
-      return {
+      return { 
+        btnDisabled2:false,
+        indexDelete:-999,
+        flagDelete:1,
+        titleDelete:'',
+        visibleWarn:false,
         message:'操作成功',
         type:'info',
         showTitle:false,
@@ -339,7 +359,24 @@
     mounted(){
       console.log('mounted')
     },
-    methods: {
+    methods: { 
+     cancleDelete(){
+       this.visibleWarn = false
+     },
+     sureDelete(){ 
+       if(this.flagDelete===1){
+          this.deleteImage(this.indexDelete);
+       }else{
+          this.deleteVidoe(this.indexDelete);
+       }
+       this.visibleWarn = false
+     },
+     showConfirm(index,flag) {
+       this.visibleWarn = true 
+       this.titleDelete = flag===1?'您确认要删除这张图片吗?':'您确认要删除这个视频吗?';
+       this.flagDelete = flag;
+       this.indexDelete = index; 
+    },
           // 点击图片查看触发
     lookDetailImg(e){
       this.preImgUrl = this.imageSrc[e]
@@ -550,8 +587,8 @@
       deleteImage(index){
         this.imageSrc.splice(index,1)
         if(this.imageSrc.length === 0){
-         this.showWhichImg = -99
-        }
+          this.showWhichImg = -99
+          } 
         this.message = "删除成功"
         this.type = "info"
         this.warnMethod();

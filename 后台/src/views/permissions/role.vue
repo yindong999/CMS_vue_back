@@ -1,17 +1,17 @@
 <template>
   <div>
     <!-- 查询区域 -->
-    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;">
+    <a-card :bordered="false" :hoverable="true" title="" style="margin-bottom: 12px;" class="statementQuery">
       <div class="table-page-search-wrapper">
         <!-- 搜索区域 -->
-        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle"> 
+        <a-form layout="inline" @keyup.enter.native="searchQuery" class="formStyle"  type="flex" justify="space-between"> 
           <a-row class="leftDiv">
             <a-col style="display:flex;align-items:center;" :span="8">
               <span class="textWidth4">角色名称</span>
               <a-input style="width:calc(100% - 97px);margin-left: 16px;" placeholder="请输入角色名称" v-model="queryParam.roleName" allowClear></a-input>
             </a-col>
           </a-row>
-             <div class="btnCol" style="width:170px;">
+             <div class="btnCol" style="width:90px;">
 						   <a-button @click="searchQuery" type="primary" class="queryBtn">
 							<img src="@/assets/searchImg.png" class="queryBtnImg" alt="">
 							查询</a-button>
@@ -24,10 +24,10 @@
     </a-card>
     <a-card :bordered="false" :hoverable="true" title="角色列表" :headStyle="headStyle" :bodyStyle="{'padding-top':'0'}">
       <!-- 操作按钮区域 -->
-      <a-button slot="extra" style="padding:0 16px;position:absolute;right:32px;" v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button slot="extra" style="padding:0 16px;position:absolute!important;right:0!important;"
+       v-if="authButton.hasOwnProperty('createBtn')&&authButton.createBtn" @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <div>
         <a-table
-          style="height:500px"
           ref="table"
           size="small"
           :bordered="bordered"
@@ -36,6 +36,7 @@
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
+          :scroll="{scrollToFirstRowOnChange:true,y:tabHeight}"
           @change="handleTableChange"
         >
           <!-- :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}" -->

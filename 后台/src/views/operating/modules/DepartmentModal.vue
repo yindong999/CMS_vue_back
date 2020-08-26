@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <a-modal :centered="true"
     :title="title"
     :width="800"
     :visible="visible"
@@ -25,7 +25,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol" style="margin-bottom:16px;"
           label="部门名称">
-          <a-input placeholder="请输入部门名称" v-decorator="[ 'departmentName', validatorRules.departmentName]" />
+          <a-input class="detailInput" placeholder="请输入部门名称" v-decorator="[ 'departmentName', validatorRules.departmentName]" />
         </a-form-item>
         <!-- 部门类型 -->
         <a-form-item
@@ -43,14 +43,14 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol" style="margin-bottom:16px;"
           label="联系人">
-          <a-input placeholder="请输入联系人"  v-decorator="[ 'contacter', validatorRules.contacter]" />
+          <a-input class="detailInput" placeholder="请输入联系人"  v-decorator="[ 'contacter', validatorRules.contacter]" />
         </a-form-item>
         <!-- 联系方式 -->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol" style="margin-bottom:16px;"
           label="联系方式">
-          <a-input placeholder="请输入联系方式" v-decorator="[ 'contacterMobile', validatorRules.contacterMobile]" />
+          <a-input class="detailInput" placeholder="请输入联系方式" v-decorator="[ 'contacterMobile', validatorRules.contacterMobile]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -235,5 +235,4 @@
 </script>
 
 <style scoped>
-
 </style>
